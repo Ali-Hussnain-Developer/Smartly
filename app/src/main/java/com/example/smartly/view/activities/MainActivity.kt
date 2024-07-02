@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.smartly.R
 import com.example.smartly.databinding.ActivityMainBinding
+import com.example.smartly.view.fragments.ResultScreen
 import com.example.smartly.view.fragments.SignUpScreen
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +22,18 @@ class MainActivity : AppCompatActivity() {
             loadFragment(SignUpScreen())
         }
 
+        if (intent != null && intent.hasExtra("fragment_to_open")) {
+            val fragmentToOpen = intent.getStringExtra("fragment_to_open")
+            if (fragmentToOpen == "ResultFragment") {
+                openFragment(ResultScreen())
+            }
+        }
+
+    }
+    private fun openFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 
     private fun loadFragment(fragment: Fragment) {

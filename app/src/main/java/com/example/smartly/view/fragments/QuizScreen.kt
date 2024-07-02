@@ -1,8 +1,15 @@
 package com.example.smartly.view.fragments
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.Html
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,42 +22,28 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.Locale
-import android.widget.Button
 import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
 import com.example.smartly.AppDatabase
 import com.example.smartly.Question
 import com.example.smartly.UserAnswer
+import com.example.smartly.databinding.FragmentQuizScreenBinding
+import com.example.smartly.view.activities.MainActivity
 import kotlinx.coroutines.launch
 
 
 class QuizScreen : Fragment() {
-  /*  private lateinit var questionTextView: TextView
-    private lateinit var optionsRadioGroup: RadioGroup
-    private lateinit var option1RadioButton: RadioButton
-    private lateinit var option2RadioButton: RadioButton
-    private lateinit var option3RadioButton: RadioButton
-    private lateinit var option4RadioButton: RadioButton
-    private lateinit var submitAnswerButton: Button
-    private val db by lazy { AppDatabase.getDatabase(requireContext()) }
-    private var currentQuestionIndex = 0
-    private var questions: List<Question> = listOf()*/
-/*var categoryId:Int?=0
+    private var _binding: FragmentQuizScreenBinding? = null
+    private val binding get() = _binding!!
+var categoryId:Int?=0
 var selectedDifficulty:String?=null
-var selectedQuestionType:String?=null*/
-
-    private lateinit var questionTextView: TextView
-    private lateinit var optionsRadioGroup: RadioGroup
-    private lateinit var option1RadioButton: RadioButton
-    private lateinit var option2RadioButton: RadioButton
-    private lateinit var option3RadioButton: RadioButton
-    private lateinit var option4RadioButton: RadioButton
-    private lateinit var submitAnswerButton: Button
+var selectedQuestionType:String?=null
     private val db by lazy { AppDatabase.getDatabase(requireContext()) }
     private var currentQuestionIndex = 0
     private var questions: List<Question> = listOf()
@@ -58,35 +51,40 @@ var selectedQuestionType:String?=null*/
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val view = inflater.inflate(R.layout.fragment_quiz_screen, container, false)
-
-        questionTextView = view.findViewById(R.id.questionTextView)
-        optionsRadioGroup = view.findViewById(R.id.optionsRadioGroup)
-        option1RadioButton = view.findViewById(R.id.option1RadioButton)
-        option2RadioButton = view.findViewById(R.id.option2RadioButton)
-        option3RadioButton = view.findViewById(R.id.option3RadioButton)
-        option4RadioButton = view.findViewById(R.id.option4RadioButton)
-        submitAnswerButton = view.findViewById(R.id.submitAnswerButton)
-
+        _binding = FragmentQuizScreenBinding.inflate(inflater, container, false)
         loadQuestions()
-
-        submitAnswerButton.setOnClickListener {
+        binding.submitAnswerButton.setOnClickListener {
             checkAnswer()
         }
-
-        return view
+        createNotificationChannel(requireContext())
+        return binding.root
     }
 
     private fun loadQuestions() {
         val amount = 10
-        val category = 21 // Example category ID
-        val difficulty = "medium"
-        val type = "multiple"
-        val triviaApi = RetrofitInstance.retrofit.create(TriviaApi::class.java)
-        val call = triviaApi.getTriviaQuestions(amount, category, difficulty, type)
+        if (arguments != null) {
+            categoryId = requireArguments().getInt("categoryId")
+            selectedDifficulty = requireArguments().getString("selectedDifficulty")
+            selectedQuestionType = requireArguments().getString("selectedQuestionType")
+        }
+        var type:String
+        if(selectedQuestionType!!.contains("True/False")){
+            type = "boolean"
+        }
+        else{
+            type="multiple"
+        }
 
-        call.enqueue(object : Callback<TriviaResponse> {
+        val triviaApi = RetrofitInstance.retrofit.create(TriviaApi::class.java)
+        val call = categoryId?.let {
+            selectedDifficulty?.let { it1 ->
+                triviaApi.getTriviaQuestions(amount, it, it1.lowercase(
+                    Locale.ROOT
+                ), type)
+            }
+        }
+
+        call?.enqueue(object : Callback<TriviaResponse> {
             override fun onResponse(call: Call<TriviaResponse>, response: Response<TriviaResponse>) {
                 if (response.isSuccessful) {
                     response.body()?.let {
@@ -110,13 +108,13 @@ var selectedQuestionType:String?=null*/
                 shuffle()
             }
 
-            questionTextView.text = Html.fromHtml(question.question, Html.FROM_HTML_MODE_LEGACY).toString()
-            option1RadioButton.text = options[0]
-            option2RadioButton.text = options[1]
-            option3RadioButton.text = options[2]
-            option4RadioButton.text = options[3]
+            binding.questionTextView.text = Html.fromHtml(question.question, Html.FROM_HTML_MODE_LEGACY).toString()
+            binding.option1RadioButton.text = options[0]
+            binding.option2RadioButton.text = options[1]
+            binding.option3RadioButton.text = options[2]
+            binding.option4RadioButton.text = options[3]
 
-            optionsRadioGroup.clearCheck()
+            binding.optionsRadioGroup.clearCheck()
         } else {
             // Quiz finished
             showResults()
@@ -124,7 +122,7 @@ var selectedQuestionType:String?=null*/
     }
 
     private fun checkAnswer() {
-        val selectedOptionId = optionsRadioGroup.checkedRadioButtonId
+        val selectedOptionId = binding.optionsRadioGroup.checkedRadioButtonId
         val selectedOption = view?.findViewById<RadioButton>(selectedOptionId)?.text.toString()
 
         val currentQuestion = questions[currentQuestionIndex]
@@ -149,7 +147,7 @@ var selectedQuestionType:String?=null*/
         }
 
         // Move to next question after a delay
-        optionsRadioGroup.postDelayed({
+        binding.optionsRadioGroup.postDelayed({
             view?.findViewById<RadioButton>(selectedOptionId)?.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.transparent))
             currentQuestionIndex++
             displayQuestion()
@@ -160,11 +158,13 @@ var selectedQuestionType:String?=null*/
         lifecycleScope.launch {
             val correctCount = db.userAnswerDao().getCorrectAnswersCount()
             val incorrectCount = db.userAnswerDao().getIncorrectAnswersCount()
-            val message = "Correct: $correctCount, Incorrect: $incorrectCount"
+            val message = "Correct: $correctCount, Incorrect: $incorrectCount Quiz Mode $selectedDifficulty"
             Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+            showNotification(requireContext(),message)
             val bundle = Bundle()
             bundle.putInt("correctCount", correctCount)
             bundle.putInt("inCorrectCount", incorrectCount)
+            bundle.putString("selectedDifficultyLevel", selectedDifficulty)
             val resultFragment: Fragment = ResultScreen()
             resultFragment.arguments = bundle
             resultFragment.arguments = bundle
@@ -177,127 +177,93 @@ var selectedQuestionType:String?=null*/
     }
 }
 
-/*    fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+fun createNotificationChannel(context: Context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val name = "My Channel"
+        val descriptionText = "Channel for My Notifications"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel("MY_CHANNEL_ID", name, importance).apply {
+            description = descriptionText
+        }
+        val notificationManager: NotificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+}
+/*fun showNotification(context: Context, message: String) {
+    val intent = Intent(context, MainActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    }
+    val pendingIntent: PendingIntent = PendingIntent.getActivity(
+        context, 0, intent, PendingIntent.FLAG_IMMUTABLE
+    )
 
+    val builder = NotificationCompat.Builder(context, "MY_CHANNEL_ID")
+        .setSmallIcon(R.drawable.quiz_app_logo)
+        .setContentTitle("My Notification")
+        .setContentText("$message")
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .setContentIntent(pendingIntent)
+        .setAutoCancel(true)
 
+    with(NotificationManagerCompat.from(context)) {
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        notify(1, builder.build())
+    }
+}*/
 
+fun showNotification(context: Context,message:String) {
+    val intent = Intent(context, MainActivity::class.java).apply {
+        putExtra("fragment_to_open", "ResultFragment")
+    }
+    val pendingIntent: PendingIntent = PendingIntent.getActivity(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
 
+    val builder = NotificationCompat.Builder(context, "MY_CHANNEL_ID")
+        .setSmallIcon(R.drawable.quiz_app_logo)
+        .setContentTitle("Your Quiz Result")
+        .setContentText("$message")
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .setContentIntent(pendingIntent)
+        .setAutoCancel(true)
 
-        *//* if (arguments != null) {
-                   categoryId = requireArguments().getInt("categoryId")
-                   selectedDifficulty = requireArguments().getString("selectedDifficulty")
-                   selectedQuestionType = requireArguments().getString("selectedQuestionType")
-               }
-               Log.d("categoryIdddd","$categoryId")
-               Log.d("selectedDifficultyyyyyyy","$selectedDifficulty")
-               Log.d("selectedQuestionTypee","$selectedQuestionType")
-               callQuizApi(categoryId!!, selectedDifficulty!!, selectedQuestionType!!)*//*
-
-
-
-
-
-
-
-
-    *//*    questionTextView = view.findViewById(R.id.questionTextView)
-        optionsRadioGroup = view.findViewById(R.id.optionsRadioGroup)
-        option1RadioButton = view.findViewById(R.id.option1RadioButton)
-        option2RadioButton = view.findViewById(R.id.option2RadioButton)
-        option3RadioButton = view.findViewById(R.id.option3RadioButton)
-        option4RadioButton = view.findViewById(R.id.option4RadioButton)
-        submitAnswerButton = view.findViewById(R.id.submitAnswerButton)
-
-        loadQuestions()
-
-        submitAnswerButton.setOnClickListener {
-            checkAnswer()
-        }*//*
-    }*/
-   /* private fun loadQuestions() {
-        val amount = 10
-        val category = 21 // Example category ID
-        val difficulty = "medium"
-        val type = "multiple"
-        val triviaApi = RetrofitInstance.retrofit.create(TriviaApi::class.java)
-        val call = triviaApi.getTriviaQuestions(amount, category, difficulty, type)
-
-        call.enqueue(object : Callback<TriviaResponse> {
-            override fun onResponse(call: Call<TriviaResponse>, response: Response<TriviaResponse>) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        questions = it.results
-                        displayQuestion()
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<TriviaResponse>, t: Throwable) {
-                // Handle failure
-            }
-        })
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val channel = NotificationChannel(
+            "MY_CHANNEL_ID",
+            "My Channel",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Channel for My Notifications"
+        }
+        val notificationManager: NotificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
-    private fun displayQuestion() {
-        if (currentQuestionIndex < questions.size) {
-            val question = questions[currentQuestionIndex]
-            val options = question.incorrect_answers.toMutableList().apply {
-                add(question.correct_answer)
-                shuffle()
-            }
-
-            questionTextView.text = Html.fromHtml(question.question, Html.FROM_HTML_MODE_LEGACY).toString()
-            option1RadioButton.text = options[0]
-            option2RadioButton.text = options[1]
-            option3RadioButton.text = options[2]
-            option4RadioButton.text = options[3]
-
-            optionsRadioGroup.clearCheck()
-        } else {
-            // Quiz finished
-            // Show results or navigate to results screen
-        }
+    with(NotificationManagerCompat.from(context)) {
+        notify(1, builder.build())
     }
+}
 
-    private fun checkAnswer() {
-        val selectedOptionId = optionsRadioGroup.checkedRadioButtonId
-        val selectedOption = view?.findViewById<RadioButton>(selectedOptionId)?.text.toString()
 
-        val currentQuestion = questions[currentQuestionIndex]
-        val correctAnswer = Html.fromHtml(currentQuestion.correct_answer, Html.FROM_HTML_MODE_LEGACY).toString()
 
-        val isCorrect = selectedOption == correctAnswer
-        val userAnswer = UserAnswer(
-            question = Html.fromHtml(currentQuestion.question, Html.FROM_HTML_MODE_LEGACY).toString(),
-            selectedAnswer = selectedOption,
-            correctAnswer = correctAnswer,
-            isCorrect = isCorrect
-        )
-
-        lifecycleScope.launch {
-            db.userAnswerDao().insert(userAnswer)
-        }
-
-      *//*  if (isCorrect) {
-            view?.findViewById<RadioButton>(selectedOptionId)?.setBackgroundColor(getColor(android.R.color.holo_green_light))
-        } else {
-            view?.findViewById<RadioButton>(selectedOptionId)?.setBackgroundColor(getColor(android.R.color.holo_red_light))
-        }*//*
-
-        if (isCorrect) {
-           view?.findViewById<RadioButton>(selectedOptionId)?.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_light))
-        } else {
-            view?.findViewById<RadioButton>(selectedOptionId)?.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_light))
-        }
-
-        // Move to next question after a delay
-        optionsRadioGroup.postDelayed({
-            view?.findViewById<RadioButton>(selectedOptionId)?.setBackgroundColor(ContextCompat.getColor(requireContext(),android.R.color.transparent))
-            currentQuestionIndex++
-            displayQuestion()
-        }, 1000)
-    }*/
 
     /*private fun callQuizApi(
         selectedCategoryId: Int,
