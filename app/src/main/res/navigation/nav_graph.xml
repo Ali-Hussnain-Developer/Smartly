@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/signUpScreen">
+
+    <fragment
+        android:id="@+id/signUpScreen"
+        android:name="com.example.smartly.view.fragments.SignUpScreen"
+        android:label="SignUpScreen" />
+</navigation>
