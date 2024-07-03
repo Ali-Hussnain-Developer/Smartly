@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.smartly.model.NotesModelClass
+import com.example.smartly.model.UserAnswer
 import kotlinx.coroutines.flow.Flow
 
 
@@ -19,14 +20,19 @@ interface NotesDao {
     @Query("SELECT * FROM Notes_Table ORDER BY id ASC")
     fun getAllNote(): Flow<List<NotesModelClass>>
 
-    // Update
-    @Update
-    suspend fun updateNote(note: NotesModelClass)
 
-    // Delete
-    @Delete
-    suspend fun deleteNote(note: NotesModelClass)
+    //Answer Question
+    @Insert
+    suspend fun insert(userAnswer: UserAnswer)
 
-    @Query("DELETE FROM Notes_Table")
-    suspend fun deleteAllNotes()
+    @Query("SELECT COUNT(*) FROM user_answers WHERE isCorrect = 1")
+    suspend fun getCorrectAnswersCount(): Int
+
+    @Query("SELECT COUNT(*) FROM user_answers WHERE isCorrect = 0")
+    suspend fun getIncorrectAnswersCount(): Int
+
+
+    @Query("SELECT * FROM user_answers")
+    fun getAllResult(): Flow<List<UserAnswer>>
+
 }

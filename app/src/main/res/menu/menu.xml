@@ -7,7 +7,12 @@
         android:title="@string/txt_profile"
          />
     <item
+        android:id="@+id/btn_result"
+        android:title="@string/txt_result"
+        />
+    <item
         android:id="@+id/btn_logout"
         android:title="@string/txt_logout"
         />
+
 </menu>

@@ -4,6 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="txt_profile">Profile</string>
     <string name="txt_logout">Logout</string>
+    <string name="txt_result">Result</string>
     <string name="txt_name">Name: </string>
     <string name="txt_question_thoughts">What is on your mind?</string>
 </resources>

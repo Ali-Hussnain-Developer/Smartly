@@ -27,7 +27,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
-import com.example.smartly.AppDatabase
+import com.example.smartly.dao.NotesDatabase
 import com.example.smartly.model.Question
 import com.example.smartly.model.UserAnswer
 import com.example.smartly.databinding.FragmentQuizScreenBinding
@@ -41,7 +41,7 @@ class QuizScreen : Fragment() {
 var categoryId:Int?=0
 var selectedDifficulty:String?=null
 var selectedQuestionType:String?=null
-    private val db by lazy { AppDatabase.getDatabase(requireContext()) }
+    private val db by lazy { NotesDatabase.getDatabase(requireContext()) }
     private var currentQuestionIndex = 0
     private var questions: List<Question> = listOf()
     override fun onCreateView(
@@ -134,7 +134,7 @@ var selectedQuestionType:String?=null
         )
 
         lifecycleScope.launch {
-            db.userAnswerDao().insert(userAnswer)
+            db.notesDao().insert(userAnswer)
         }
 
         if (isCorrect) {
@@ -153,8 +153,8 @@ var selectedQuestionType:String?=null
 
     private fun showResults() {
         lifecycleScope.launch {
-            val correctCount = db.userAnswerDao().getCorrectAnswersCount()
-            val incorrectCount = db.userAnswerDao().getIncorrectAnswersCount()
+            val correctCount = db.notesDao().getCorrectAnswersCount()
+            val incorrectCount = db.notesDao().getIncorrectAnswersCount()
             val message = "Correct: $correctCount, Incorrect: $incorrectCount Quiz Mode $selectedDifficulty"
             Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
             showNotification(requireContext(),message)

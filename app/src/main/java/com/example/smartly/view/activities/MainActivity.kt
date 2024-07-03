@@ -66,6 +66,11 @@ class MainActivity : AppCompatActivity() {
                     .replace(R.id.fragment_container, ProfileScreen())
                     .commit()
             }
+            R.id.btn_result -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, ResultScreen())
+                    .commit()
+            }
         }
         return true
     }

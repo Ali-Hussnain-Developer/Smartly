@@ -5,41 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".view.fragments.ResultScreen"
     android:orientation="vertical">
-    <LinearLayout
+
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginVertical="20dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Correct Answer"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvCorrectAnswer"
-            android:text="10"
-            android:layout_marginHorizontal="10dp"/>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="InCorrect Answer"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvInCorrectAnswer"
-            android:text="0"
-            android:layout_marginHorizontal="10dp"/>
-
-
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:id="@+id/recycler_view_result"/>
 
 </LinearLayout>
