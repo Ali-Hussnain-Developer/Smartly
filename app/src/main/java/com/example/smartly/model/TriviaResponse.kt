@@ -1,4 +1,4 @@
-package com.example.smartly
+package com.example.smartly.model
 
 data class Question(
     val category: String,

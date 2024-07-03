@@ -1,12 +1,10 @@
 package com.example.smartly.view.fragments
 
-import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -15,24 +13,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.smartly.R
-import com.example.smartly.RetrofitInstance
-import com.example.smartly.TriviaApi
-import com.example.smartly.TriviaResponse
+import com.example.smartly.apiInterface.RetrofitInstance
+import com.example.smartly.apiInterface.TriviaApi
+import com.example.smartly.model.TriviaResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.Locale
 import android.widget.RadioButton
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
 import com.example.smartly.AppDatabase
-import com.example.smartly.Question
-import com.example.smartly.UserAnswer
+import com.example.smartly.model.Question
+import com.example.smartly.model.UserAnswer
 import com.example.smartly.databinding.FragmentQuizScreenBinding
 import com.example.smartly.view.activities.MainActivity
 import kotlinx.coroutines.launch
@@ -190,40 +187,7 @@ fun createNotificationChannel(context: Context) {
         notificationManager.createNotificationChannel(channel)
     }
 }
-/*fun showNotification(context: Context, message: String) {
-    val intent = Intent(context, MainActivity::class.java).apply {
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-    }
-    val pendingIntent: PendingIntent = PendingIntent.getActivity(
-        context, 0, intent, PendingIntent.FLAG_IMMUTABLE
-    )
 
-    val builder = NotificationCompat.Builder(context, "MY_CHANNEL_ID")
-        .setSmallIcon(R.drawable.quiz_app_logo)
-        .setContentTitle("My Notification")
-        .setContentText("$message")
-        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-        .setContentIntent(pendingIntent)
-        .setAutoCancel(true)
-
-    with(NotificationManagerCompat.from(context)) {
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
-        notify(1, builder.build())
-    }
-}*/
 
 fun showNotification(context: Context,message:String) {
     val intent = Intent(context, MainActivity::class.java).apply {

@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import android.content.Context
+import com.example.smartly.dao.UserAnswerDao
+import com.example.smartly.model.UserAnswer
 
 @Database(entities = [UserAnswer::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {

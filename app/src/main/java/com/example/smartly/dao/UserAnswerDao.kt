@@ -1,8 +1,9 @@
-package com.example.smartly
+package com.example.smartly.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.smartly.model.UserAnswer
 
 @Dao
 interface UserAnswerDao {

@@ -37,13 +37,16 @@ if(selectedDifficultyLevel!=null){
         if(selectedDifficultyLevel!!.contains("Easy")){
             var totalPoints= correctAnswer!! *1
             binding.tvCorrectAnswer.text= totalPoints.toString()
+            Toast.makeText(requireContext(),"$totalPoints",Toast.LENGTH_SHORT).show()
         }
         else  if(selectedDifficultyLevel!!.contains("Medium")){
             var totalPoints= correctAnswer!! *2
             binding.tvCorrectAnswer.text= totalPoints.toString()
+            Toast.makeText(requireContext(),"$totalPoints",Toast.LENGTH_SHORT).show()
         }else  if(selectedDifficultyLevel!!.contains("Hard")){
             var totalPoints= correctAnswer!! *3
             binding.tvCorrectAnswer.text= totalPoints.toString()
+            Toast.makeText(requireContext(),"$totalPoints",Toast.LENGTH_SHORT).show()
         }else{
             Toast.makeText(requireContext(),"Else",Toast.LENGTH_SHORT).show()
         }

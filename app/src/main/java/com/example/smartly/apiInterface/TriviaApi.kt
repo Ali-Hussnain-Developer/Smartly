@@ -1,5 +1,6 @@
-package com.example.smartly
+package com.example.smartly.apiInterface
 
+import com.example.smartly.model.TriviaResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

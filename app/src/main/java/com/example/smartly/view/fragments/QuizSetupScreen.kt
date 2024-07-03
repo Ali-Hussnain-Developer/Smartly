@@ -1,5 +1,9 @@
 package com.example.smartly.view.fragments
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +12,8 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.smartly.R
@@ -21,7 +27,14 @@ class QuizSetupScreen : Fragment() {
     private var selectedDifficulty: String? = null
     private var selectedQuestionType: String? = null
     private var categoryId:Int?=0
-
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                Toast.makeText(requireContext(),"Permission Granted",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(),"Permission not Granted",Toast.LENGTH_SHORT).show()
+            }
+        }
     private val categories = listOf(
          "General Knowledge",
          "Entertainment: Books",
@@ -55,6 +68,7 @@ class QuizSetupScreen : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        askUserNotificationPermission(requireContext())
         setupSpinner(binding.spinnerCategories, categories) { selectedCategory = it }
         setupSpinner(binding.spinnerDifficulty, difficulties) { selectedDifficulty = it }
         setupSpinner(binding.spinnerQuestionType, questionTypes) { selectedQuestionType = it }
@@ -80,6 +94,25 @@ class QuizSetupScreen : Fragment() {
         }
     }
 
+    private fun askUserNotificationPermission(requireContext: Context) {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // TODO: display an educational UI explaining to the user the features that will be enabled
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
+    }
   /*  private fun callQuizApi(
         selectedCategoryId: Int,
         selectedDifficulty: String,

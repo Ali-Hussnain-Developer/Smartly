@@ -1,4 +1,4 @@
-package com.example.smartly
+package com.example.smartly.apiInterface
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

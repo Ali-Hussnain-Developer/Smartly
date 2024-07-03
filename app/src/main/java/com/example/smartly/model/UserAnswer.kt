@@ -1,4 +1,4 @@
-package com.example.smartly
+package com.example.smartly.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
