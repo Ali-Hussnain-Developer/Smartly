@@ -1,18 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="10dp"
+    android:layout_marginVertical="10dp"
+    android:layout_marginHorizontal="20dp">
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:layout_margin="10dp">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_question"
-        android:text="what is your name?"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"/>
+        android:orientation="horizontal"
+      >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Questions:  "
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_question"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+    </LinearLayout>
 
        <LinearLayout
        android:layout_width="match_parent"
@@ -24,13 +44,15 @@
            android:layout_height="wrap_content"
            android:text="Correct Answer"
            android:textColor="@color/black"
+           android:textStyle="bold"
            />
        <TextView
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:id="@+id/tv_correct_answer"
            android:textColor="@color/black"
-           android:layout_marginHorizontal="10dp"/>
+           android:layout_marginHorizontal="10dp"
+          />
 
 
    </LinearLayout>
@@ -43,7 +65,8 @@
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:text="Selected Answer"
-           android:textColor="@color/black"/>
+           android:textColor="@color/black"
+           android:textStyle="bold"/>
        <TextView
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
@@ -57,3 +80,4 @@
 
 
 </LinearLayout>
+</androidx.cardview.widget.CardView>

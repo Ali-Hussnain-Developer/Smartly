@@ -3,27 +3,29 @@ package com.example.smartly.view.activities
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.smartly.R
 import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.ActivityMainBinding
 import com.example.smartly.view.fragments.ProfileScreen
-import com.example.smartly.view.fragments.QuizScreen
-import com.example.smartly.view.fragments.QuizSetupScreen
 import com.example.smartly.view.fragments.ResultScreen
 import com.example.smartly.view.fragments.SignUpScreen
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityMainBinding.inflate(layoutInflater)
+        initialization(savedInstanceState)
+        setContentView(binding.root)
+    }
+
+    private fun initialization(savedInstanceState: Bundle?) {
         sharedPreferencesHelper = SharedPreferencesHelper(this)
         if (savedInstanceState == null) {
             loadFragment(SignUpScreen())
@@ -34,8 +36,8 @@ class MainActivity : AppCompatActivity() {
                 openFragment(ResultScreen())
             }
         }
-        setContentView(binding.root)
     }
+
     private fun openFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)

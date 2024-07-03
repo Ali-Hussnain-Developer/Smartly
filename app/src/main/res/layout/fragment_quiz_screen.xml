@@ -44,6 +44,12 @@
             android:layout_height="wrap_content"
             android:text="Option 4"/>
     </RadioGroup>
+    <ProgressBar
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/progress_bar"
+        android:visibility="gone"
+        android:layout_centerInParent="true"/>
 
     <Button
         android:id="@+id/submitAnswerButton"

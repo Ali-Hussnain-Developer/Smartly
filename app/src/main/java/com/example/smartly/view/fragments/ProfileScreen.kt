@@ -30,11 +30,14 @@ class ProfileScreen : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentProfileScreenBinding.inflate(inflater, container, false)
-        initialization()
-        clickListener()
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initialization()
+        clickListener()
+    }
     private fun clickListener() {
 
         binding.buttonPost.setOnClickListener {
