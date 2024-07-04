@@ -18,4 +18,8 @@ class NotesRepository(val notesDao: NotesDao) {
     }
 
 
+    suspend fun insertAnswer( userAnswer: UserAnswer) {
+        notesDao.insertAnswer(userAnswer)
+    }
+
 }

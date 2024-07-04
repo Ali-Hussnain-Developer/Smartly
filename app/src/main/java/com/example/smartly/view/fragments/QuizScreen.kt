@@ -30,7 +30,11 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.room.InvalidationTracker
 import com.example.smartly.Util.ApiState
 import com.example.smartly.Util.CreateNotificationClass
 import com.example.smartly.Util.InternetConnectivity.Companion.isInternetAvailable
@@ -39,13 +43,18 @@ import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.Util.ShowEmptyListDialog
 import com.example.smartly.Util.ShowNotificationClass
 import com.example.smartly.Util.ShowScoreDialog
+import com.example.smartly.adapter.ResultAdapter
+import com.example.smartly.applicationClass.NotesApplication
 import com.example.smartly.dao.NotesDatabase
 import com.example.smartly.model.Question
 import com.example.smartly.model.UserAnswer
 import com.example.smartly.databinding.FragmentQuizScreenBinding
 import com.example.smartly.view.activities.MainActivity
 import com.example.smartly.viewModel.MainViewModel
+import com.example.smartly.viewModel.NotesViewModel
+import com.example.smartly.viewModel.NotesViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.launch
 
@@ -64,7 +73,9 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     lateinit var progressBar: ProgressBar
     lateinit var submitButton: Button
     private var isQuizStarted = false
-     var userTotalScore :Int?=0
+    var userTotalScore: Int? = 0
+    lateinit var notesViewModel: NotesViewModel
+
 
     private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     override fun onCreateView(
@@ -82,20 +93,26 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     }
 
     private fun initialization(view: View) {
+        val application = requireActivity().application as NotesApplication
+        val viewModelFactory = NotesViewModelFactory(application.repository)
+        notesViewModel = ViewModelProvider(this, viewModelFactory).get(NotesViewModel::class.java)
         sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
         progressBar = view.findViewById(R.id.progress_bar)
         submitButton = view.findViewById(R.id.submitAnswerButton)
         if (!isInternetAvailable(requireContext())) {
-            Toast.makeText(requireContext(), "No internet connection. Please check your network settings.", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                requireContext(),
+                "No internet connection. Please check your network settings.",
+                Toast.LENGTH_LONG
+            ).show()
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, QuizSetupScreen())
                 .addToBackStack(null)
                 .commit()
-        }
-        else{
+        } else {
             loadQuestions()
         }
-       CreateNotificationClass.createNotificationChannel(requireContext())
+        CreateNotificationClass.createNotificationChannel(requireContext())
     }
 
     private fun clickListener() {
@@ -117,29 +134,31 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
             selectedDifficulty = requireArguments().getString("selectedDifficulty")
             selectedQuestionType = requireArguments().getString("selectedQuestionType")
         }
-        val type:String?
+        val type: String?
         if (selectedQuestionType!!.contains("True/False")) {
-            val categoryIdNew= (categoryId)!! +8
-           type= "boolean"
-            mainViewModel.getTriviaQuestions(amount,
-                categoryIdNew,selectedDifficulty!!.toLowerCase(Locale.ROOT),type)
+            val categoryIdNew = (categoryId)!! + 8
+            type = "boolean"
+            mainViewModel.getTriviaQuestions(
+                amount,
+                categoryIdNew, selectedDifficulty!!.toLowerCase(Locale.ROOT), type
+            )
         } else {
-           type= "multiple"
-            val categoryIdNew= (categoryId)!! +9
+            type = "multiple"
+            val categoryIdNew = (categoryId)!! + 9
             categoryIdNew.let {
-          selectedDifficulty.let { difficulty ->
-              it?.let { it1 ->
-                  difficulty?.let { it2 ->
-                      mainViewModel.getTriviaQuestions(
-                          amount,
-                          it1,
-                          it2.toLowerCase(Locale.ROOT),
-                          type
-                      )
-                  }
-              }
-          }
-      }
+                selectedDifficulty.let { difficulty ->
+                    it?.let { it1 ->
+                        difficulty?.let { it2 ->
+                            mainViewModel.getTriviaQuestions(
+                                amount,
+                                it1,
+                                it2.toLowerCase(Locale.ROOT),
+                                type
+                            )
+                        }
+                    }
+                }
+            }
         }
 
         if (!isQuizStarted) {
@@ -181,50 +200,51 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     }
 
     private fun displayQuestion() {
-        if(questions.isEmpty()){
+        if (questions.isEmpty()) {
             ShowEmptyListDialog.showEmptyListDialog(requireContext(), this)
 
-        }else{
-        binding.totalQuestionTextView.text = "Total Questions: ${questions.size}"
-        binding.quizMode.text = "Quiz Mode: ${selectedDifficulty}"
-        if (currentQuestionIndex < questions.size) {
-            val question = questions[currentQuestionIndex]
-            binding.questionNumberTextView.text = "Question # ${currentQuestionIndex + 1}"
-            binding.optionsRadioGroup.visibility = View.VISIBLE
-            binding.submitAnswerButton.visibility = View.VISIBLE
-            val options = question.incorrect_answers.toMutableList().apply {
-                add(question.correct_answer)
-                shuffle()
-            }
-
-            binding.questionTextView.text =
-                Html.fromHtml(question.question, Html.FROM_HTML_MODE_LEGACY).toString()
-
-            if (question.type == "boolean") {
-                binding.option1RadioButton.visibility = View.VISIBLE
-                binding.option2RadioButton.visibility = View.VISIBLE
-                binding.option3RadioButton.visibility = View.GONE
-                binding.option4RadioButton.visibility = View.GONE
-                binding.option1RadioButton.text = options[0]
-                binding.option2RadioButton.text = options[1]
-            } else {
-                binding.option1RadioButton.visibility = View.VISIBLE
-                binding.option2RadioButton.visibility = View.VISIBLE
-                binding.option3RadioButton.visibility = View.VISIBLE
-                binding.option4RadioButton.visibility = View.VISIBLE
-                binding.option1RadioButton.text = options[0]
-                binding.option2RadioButton.text = options[1]
-                binding.option3RadioButton.text = options[2]
-                binding.option4RadioButton.text = options[3]
-            }
-
-
-            binding.optionsRadioGroup.clearCheck()
         } else {
-            // Quiz finished
-            showResults()
+            binding.totalQuestionTextView.text = "Total Questions: ${questions.size}"
+            binding.quizMode.text = "Quiz Mode: ${selectedDifficulty}"
+            if (currentQuestionIndex < questions.size) {
+                val question = questions[currentQuestionIndex]
+                binding.questionNumberTextView.text = "Question # ${currentQuestionIndex + 1}"
+                binding.optionsRadioGroup.visibility = View.VISIBLE
+                binding.submitAnswerButton.visibility = View.VISIBLE
+                val options = question.incorrect_answers.toMutableList().apply {
+                    add(question.correct_answer)
+                    shuffle()
+                }
+
+                binding.questionTextView.text =
+                    Html.fromHtml(question.question, Html.FROM_HTML_MODE_LEGACY).toString()
+
+                if (question.type == "boolean") {
+                    binding.option1RadioButton.visibility = View.VISIBLE
+                    binding.option2RadioButton.visibility = View.VISIBLE
+                    binding.option3RadioButton.visibility = View.GONE
+                    binding.option4RadioButton.visibility = View.GONE
+                    binding.option1RadioButton.text = options[0]
+                    binding.option2RadioButton.text = options[1]
+                } else {
+                    binding.option1RadioButton.visibility = View.VISIBLE
+                    binding.option2RadioButton.visibility = View.VISIBLE
+                    binding.option3RadioButton.visibility = View.VISIBLE
+                    binding.option4RadioButton.visibility = View.VISIBLE
+                    binding.option1RadioButton.text = options[0]
+                    binding.option2RadioButton.text = options[1]
+                    binding.option3RadioButton.text = options[2]
+                    binding.option4RadioButton.text = options[3]
+                }
+
+
+                binding.optionsRadioGroup.clearCheck()
+            } else {
+                // Quiz finished
+                showResults()
+            }
         }
-    }}
+    }
 
 
     private fun checkAnswer() {
@@ -245,10 +265,11 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
         )
 
         lifecycleScope.launch {
-            db.notesDao().insert(userAnswer)
+            notesViewModel.insertAnswer(userAnswer)
+            // db.notesDao().insertAnswer(userAnswer)
         }
         binding.optionsRadioGroup.clearCheck()
-        QuizFeedBackDialog.showFeedbackDialog(isCorrect,requireContext())
+        QuizFeedBackDialog.showFeedbackDialog(isCorrect, requireContext())
 
         // Move to next question after a delay
         binding.optionsRadioGroup.postDelayed({
@@ -264,11 +285,16 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     }
 
     private fun showResults() {
-        lifecycleScope.launch {
-            val correctCount = db.notesDao().getCorrectAnswersCount()
-            val incorrectCount = db.notesDao().getIncorrectAnswersCount()
 
-            userTotalScore= ShowScoreDialog.showScoreDialog(selectedDifficulty.toString(), correctCount,requireContext(),sharedPreferencesHelper)
+        lifecycleScope.launch {
+            val incorrectCount = db.notesDao().getIncorrectAnswersCount()
+            val correctCount = db.notesDao().getCorrectAnswersCount()
+            userTotalScore = ShowScoreDialog.showScoreDialog(
+                selectedDifficulty.toString(),
+                correctCount,
+                requireContext(),
+                sharedPreferencesHelper
+            )
             val message =
                 "Correct: $correctCount, Incorrect: $incorrectCount Quiz Mode $selectedDifficulty Total Score $userTotalScore "
             Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()

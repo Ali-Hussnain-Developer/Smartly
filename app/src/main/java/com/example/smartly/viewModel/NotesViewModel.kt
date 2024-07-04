@@ -19,6 +19,9 @@ class NotesViewModel(private val notesRepository: NotesRepository) : ViewModel()
     fun insertNotes(notes: NotesModelClass) = viewModelScope.launch(Dispatchers.IO){
             notesRepository.insert(notes)
     }
+    fun insertAnswer(userAnswer: UserAnswer) = viewModelScope.launch(Dispatchers.IO){
+        notesRepository.insertAnswer(userAnswer)
+    }
 }
 class NotesViewModelFactory(private val repository: NotesRepository): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

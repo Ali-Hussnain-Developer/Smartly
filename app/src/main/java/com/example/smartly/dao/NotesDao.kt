@@ -23,7 +23,7 @@ interface NotesDao {
 
     //Answer Question
     @Insert
-    suspend fun insert(userAnswer: UserAnswer)
+    suspend fun insertAnswer(userAnswer: UserAnswer)
 
     @Query("SELECT COUNT(*) FROM user_answers WHERE isCorrect = 1")
     suspend fun getCorrectAnswersCount(): Int
