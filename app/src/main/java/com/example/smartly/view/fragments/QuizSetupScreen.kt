@@ -133,7 +133,7 @@ class QuizSetupScreen : Fragment() {
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                categoryId = position + 9
+                categoryId = position
                 val selectedItem = parent.getItemAtPosition(position) as String
                 onItemSelected(selectedItem)
             }

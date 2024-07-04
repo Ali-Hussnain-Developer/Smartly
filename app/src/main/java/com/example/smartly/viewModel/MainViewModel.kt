@@ -20,13 +20,18 @@ class MainViewModel @Inject constructor(private val mainRepository: MainReposito
 
     fun getTriviaQuestions(amount: Int, category: Int, difficulty: String, type: String) = viewModelScope.launch {
         triviaStateFlow.value = ApiState.Loading
+
         mainRepository.getTriviaQuestions(amount, category, difficulty, type)
+
             .catch { e ->
                 triviaStateFlow.value = ApiState.Failure(e)
                 Log.e("MainViewModel", "Error fetching trivia questions", e)
             }
             .collect { data ->
                 triviaStateFlow.value = ApiState.Success(data.results)
+
             }
     }
 }
+
+

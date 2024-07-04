@@ -20,6 +20,13 @@ class MainRepository @Inject constructor(private val triviaApiImpl: TriviaApiImp
     ): Flow<TriviaResponse> = flow {
         emit(triviaApiImpl.getTriviaQuestions(amount, category, difficulty, type))
     }.flowOn(Dispatchers.IO)
+
 }
+
+
+
+
+
+
 
 

@@ -13,4 +13,5 @@ interface TriviaApi {
         @Query("difficulty") difficulty: String,
         @Query("type") type: String
     ): TriviaResponse
+
 }

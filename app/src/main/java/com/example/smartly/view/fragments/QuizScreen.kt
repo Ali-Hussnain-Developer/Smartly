@@ -30,11 +30,15 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.example.smartly.Util.ApiState
+import com.example.smartly.Util.CreateNotificationClass
+import com.example.smartly.Util.InternetConnectivity.Companion.isInternetAvailable
+import com.example.smartly.Util.QuizFeedBackDialog
 import com.example.smartly.Util.SharedPreferencesHelper
+import com.example.smartly.Util.ShowEmptyListDialog
+import com.example.smartly.Util.ShowNotificationClass
+import com.example.smartly.Util.ShowScoreDialog
 import com.example.smartly.dao.NotesDatabase
 import com.example.smartly.model.Question
 import com.example.smartly.model.UserAnswer
@@ -42,14 +46,12 @@ import com.example.smartly.databinding.FragmentQuizScreenBinding
 import com.example.smartly.view.activities.MainActivity
 import com.example.smartly.viewModel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+
 import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class QuizScreen : Fragment() {
+class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     private var _binding: FragmentQuizScreenBinding? = null
     private val binding get() = _binding!!
     var categoryId: Int? = 0
@@ -62,7 +64,8 @@ class QuizScreen : Fragment() {
     lateinit var progressBar: ProgressBar
     lateinit var submitButton: Button
     private var isQuizStarted = false
-    private var userTotalScore:Int?=0
+     var userTotalScore :Int?=0
+
     private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,8 +85,17 @@ class QuizScreen : Fragment() {
         sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
         progressBar = view.findViewById(R.id.progress_bar)
         submitButton = view.findViewById(R.id.submitAnswerButton)
-        loadQuestions()
-        createNotificationChannel(requireContext())
+        if (!isInternetAvailable(requireContext())) {
+            Toast.makeText(requireContext(), "No internet connection. Please check your network settings.", Toast.LENGTH_LONG).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, QuizSetupScreen())
+                .addToBackStack(null)
+                .commit()
+        }
+        else{
+            loadQuestions()
+        }
+       CreateNotificationClass.createNotificationChannel(requireContext())
     }
 
     private fun clickListener() {
@@ -105,31 +117,39 @@ class QuizScreen : Fragment() {
             selectedDifficulty = requireArguments().getString("selectedDifficulty")
             selectedQuestionType = requireArguments().getString("selectedQuestionType")
         }
-        val type = if (selectedQuestionType!!.contains("True/False")) {
-            "boolean"
+        val type:String?
+        if (selectedQuestionType!!.contains("True/False")) {
+            val categoryIdNew= (categoryId)!! +8
+           type= "boolean"
+            mainViewModel.getTriviaQuestions(amount,
+                categoryIdNew,selectedDifficulty!!.toLowerCase(Locale.ROOT),type)
         } else {
-            "multiple"
+           type= "multiple"
+            val categoryIdNew= (categoryId)!! +9
+            categoryIdNew.let {
+          selectedDifficulty.let { difficulty ->
+              it?.let { it1 ->
+                  difficulty?.let { it2 ->
+                      mainViewModel.getTriviaQuestions(
+                          amount,
+                          it1,
+                          it2.toLowerCase(Locale.ROOT),
+                          type
+                      )
+                  }
+              }
+          }
+      }
         }
+
         if (!isQuizStarted) {
             lifecycleScope.launch {
                 db.notesDao().deleteAllUserAnswers()
             }
             isQuizStarted = true // Mark the quiz as started
         }
-        categoryId.let {
-            selectedDifficulty.let { difficulty ->
-                it?.let { it1 ->
-                    difficulty?.let { it2 ->
-                        mainViewModel.getTriviaQuestions(
-                            amount,
-                            it1,
-                            it2.toLowerCase(Locale.ROOT),
-                            type
-                        )
-                    }
-                }
-            }
-        }
+
+
 
         lifecycleScope.launchWhenStarted {
             mainViewModel._triviaStateFlow.collect { state ->
@@ -161,6 +181,10 @@ class QuizScreen : Fragment() {
     }
 
     private fun displayQuestion() {
+        if(questions.isEmpty()){
+            ShowEmptyListDialog.showEmptyListDialog(requireContext(), this)
+
+        }else{
         binding.totalQuestionTextView.text = "Total Questions: ${questions.size}"
         binding.quizMode.text = "Quiz Mode: ${selectedDifficulty}"
         if (currentQuestionIndex < questions.size) {
@@ -175,17 +199,33 @@ class QuizScreen : Fragment() {
 
             binding.questionTextView.text =
                 Html.fromHtml(question.question, Html.FROM_HTML_MODE_LEGACY).toString()
-            binding.option1RadioButton.text = options[0]
-            binding.option2RadioButton.text = options[1]
-            binding.option3RadioButton.text = options[2]
-            binding.option4RadioButton.text = options[3]
+
+            if (question.type == "boolean") {
+                binding.option1RadioButton.visibility = View.VISIBLE
+                binding.option2RadioButton.visibility = View.VISIBLE
+                binding.option3RadioButton.visibility = View.GONE
+                binding.option4RadioButton.visibility = View.GONE
+                binding.option1RadioButton.text = options[0]
+                binding.option2RadioButton.text = options[1]
+            } else {
+                binding.option1RadioButton.visibility = View.VISIBLE
+                binding.option2RadioButton.visibility = View.VISIBLE
+                binding.option3RadioButton.visibility = View.VISIBLE
+                binding.option4RadioButton.visibility = View.VISIBLE
+                binding.option1RadioButton.text = options[0]
+                binding.option2RadioButton.text = options[1]
+                binding.option3RadioButton.text = options[2]
+                binding.option4RadioButton.text = options[3]
+            }
+
 
             binding.optionsRadioGroup.clearCheck()
         } else {
             // Quiz finished
             showResults()
         }
-    }
+    }}
+
 
     private fun checkAnswer() {
         val selectedOptionId = binding.optionsRadioGroup.checkedRadioButtonId
@@ -208,7 +248,8 @@ class QuizScreen : Fragment() {
             db.notesDao().insert(userAnswer)
         }
         binding.optionsRadioGroup.clearCheck()
-        showFeedbackDialog(isCorrect)
+        QuizFeedBackDialog.showFeedbackDialog(isCorrect,requireContext())
+
         // Move to next question after a delay
         binding.optionsRadioGroup.postDelayed({
             view?.findViewById<RadioButton>(selectedOptionId)?.setBackgroundColor(
@@ -226,12 +267,12 @@ class QuizScreen : Fragment() {
         lifecycleScope.launch {
             val correctCount = db.notesDao().getCorrectAnswersCount()
             val incorrectCount = db.notesDao().getIncorrectAnswersCount()
+
+            userTotalScore= ShowScoreDialog.showScoreDialog(selectedDifficulty.toString(), correctCount,requireContext(),sharedPreferencesHelper)
             val message =
                 "Correct: $correctCount, Incorrect: $incorrectCount Quiz Mode $selectedDifficulty Total Score $userTotalScore "
             Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-
-            showScoreDialog(selectedDifficulty.toString(), correctCount)
-            showNotification(requireContext(), message)
+            ShowNotificationClass.showNotification(requireContext(), message)
             val bundle = Bundle().apply {
                 putInt("correctCount", correctCount)
                 putInt("inCorrectCount", incorrectCount)
@@ -248,139 +289,15 @@ class QuizScreen : Fragment() {
     }
 
 
-    fun createNotificationChannel(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "My Channel"
-            val descriptionText = "Channel for My Notifications"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("MY_CHANNEL_ID", name, importance).apply {
-                description = descriptionText
-            }
-            val notificationManager: NotificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-
-    fun showNotification(context: Context, message: String) {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            putExtra("fragment_to_open", "ResultFragment")
-        }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(
-            context,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val builder = NotificationCompat.Builder(context, "MY_CHANNEL_ID")
-            .setSmallIcon(R.drawable.quiz_app_logo)
-            .setContentTitle("Your Quiz Result")
-            .setContentText("$message")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                "MY_CHANNEL_ID",
-                "My Channel",
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description = "Channel for My Notifications"
-            }
-            val notificationManager: NotificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        with(NotificationManagerCompat.from(context)) {
-            notify(1, builder.build())
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    private fun showFeedbackDialog(isCorrect: Boolean) {
-        val dialogView =
-            LayoutInflater.from(requireContext()).inflate(R.layout.dialog_feedback, null)
-        val feedbackImageView = dialogView.findViewById<ImageView>(R.id.feedbackImageView)
-        val feedbackTextView = dialogView.findViewById<TextView>(R.id.feedbackTextView)
-
-        if (isCorrect) {
-            feedbackImageView.setImageResource(R.drawable.ic_correct)
-            feedbackTextView.text = "Correct Answer"
-            feedbackTextView.setTextColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    android.R.color.holo_green_dark
-                )
-            )
-        } else {
-            feedbackImageView.setImageResource(R.drawable.ic_wrong)
-            feedbackTextView.text = "Wrong Answer"
-            feedbackTextView.setTextColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    android.R.color.holo_red_dark
-                )
-            )
-        }
-
-        val alertDialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
-
-        // Set the dialog window background to transparent
-        alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        alertDialog.show()
-
-        val fadeOut = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out)
-        dialogView.postDelayed({
-            dialogView.startAnimation(fadeOut)
-            dialogView.postDelayed({
-                alertDialog.dismiss()
-            }, fadeOut.duration)
-        }, 500)
+    override fun onCategorySelected() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, QuizSetupScreen())
+            .addToBackStack(null)
+            .commit()
     }
-
-    @SuppressLint("MissingInflatedId")
-    private fun showScoreDialog(userQuizMode: String, userCorrectAnswer: Int) {
-        val dialogView =
-            LayoutInflater.from(requireContext()).inflate(R.layout.dialog_total_score, null)
-
-        val userScoreTextView = dialogView.findViewById<TextView>(R.id.totalScoreTextView)
-        val userQuizModeTextView = dialogView.findViewById<TextView>(R.id.userQuizModeTextView)
-        val userCorrectedAnswerTextView = dialogView.findViewById<TextView>(R.id.userCorrectedAnswerTextView)
-        val alertDialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
-
-        alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        if (userQuizMode.contains("Easy")) {
-            userTotalScore=userCorrectAnswer*1
-
-        } else if (userQuizMode.contains("Medium")) {
-            userTotalScore=userCorrectAnswer*2
-
-        } else if (userQuizMode.contains("Hard")) {
-            userTotalScore=userCorrectAnswer*3
-
-        }
-        userScoreTextView.text=userTotalScore.toString()
-        userQuizModeTextView.text=userQuizMode
-        userCorrectedAnswerTextView.text=userCorrectAnswer.toString()
-        sharedPreferencesHelper.setUserTotalScore(userTotalScore.toString())
-        alertDialog.show()
-
-    }
-
 }
