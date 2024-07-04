@@ -7,4 +7,6 @@
     <string name="txt_result">Result</string>
     <string name="txt_name">Name: </string>
     <string name="txt_question_thoughts">What is on your mind?</string>
+    <string name="txt_submit_answer">Submit Answer</string>
+    <string name="txt_quiz_type">Choose Quiz Type</string>
 </resources>

@@ -8,6 +8,8 @@ class SharedPreferencesHelper(context: Context) {
     private val prefsName = "login_prefs"
     private val keyIsLoggedIn = "is_logged_in"
     private val keyUserName = "user_name"
+    private val keyUserCategory = "user_category"
+    private val keyUserTotalScore = "user_total_score"
     private val sharedPreferences: SharedPreferences
 
     init {
@@ -31,5 +33,23 @@ class SharedPreferencesHelper(context: Context) {
     }
     fun gerUsername(): String? {
         return sharedPreferences.getString(keyUserName,"")
+    }
+
+    fun setUserCategory(category:String) {
+        val editor = sharedPreferences.edit()
+        editor.putString(keyUserCategory, category)
+        editor.apply()
+    }
+    fun getUserCategory(): String? {
+        return sharedPreferences.getString(keyUserCategory,"")
+    }
+
+    fun setUserTotalScore(marks:String) {
+        val editor = sharedPreferences.edit()
+        editor.putString(keyUserTotalScore, marks)
+        editor.apply()
+    }
+    fun getUserTotalScore(): String? {
+        return sharedPreferences.getString(keyUserTotalScore,"")
     }
 }

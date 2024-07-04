@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.smartly.R
+import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.FragmentQuizSetupScreenBinding
 
 
@@ -27,6 +28,7 @@ class QuizSetupScreen : Fragment() {
     private var selectedDifficulty: String? = null
     private var selectedQuestionType: String? = null
     private var categoryId: Int? = 0
+    private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
@@ -74,6 +76,7 @@ class QuizSetupScreen : Fragment() {
     }
 
     private fun initialization() {
+        sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
         askUserNotificationPermission(requireContext())
         setupSpinner(binding.spinnerCategories, categories) { selectedCategory = it }
         setupSpinner(binding.spinnerDifficulty, difficulties) { selectedDifficulty = it }
@@ -94,7 +97,8 @@ class QuizSetupScreen : Fragment() {
                 transaction.addToBackStack(null)
                 transaction.commit()
                 val message = "Category: $selectedCategory\nDifficulty: $selectedDifficulty\nQuestion Type: $selectedQuestionType"
-                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                sharedPreferencesHelper.setUserCategory(selectedCategory.toString())
+
             } else {
                 Toast.makeText(requireContext(), "Please select all options", Toast.LENGTH_SHORT).show()
             }

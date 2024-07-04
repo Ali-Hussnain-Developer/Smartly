@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:background="@android:color/transparent"> <!-- Transparent root background -->
+
+    <LinearLayout
+        android:id="@+id/feedbackLayout"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/curved_edit_text"
+        android:layout_below="@id/questionTextView"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/feedbackImageView"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_correct"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/feedbackTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Correct"
+            android:textStyle="bold"
+
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+</FrameLayout>
+
+

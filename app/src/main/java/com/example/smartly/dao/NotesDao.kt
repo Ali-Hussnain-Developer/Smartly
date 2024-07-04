@@ -35,4 +35,8 @@ interface NotesDao {
     @Query("SELECT * FROM user_answers")
     fun getAllResult(): Flow<List<UserAnswer>>
 
+    // Add this method to delete all user answers
+    @Query("DELETE FROM user_answers")
+    suspend fun deleteAllUserAnswers()
+
 }

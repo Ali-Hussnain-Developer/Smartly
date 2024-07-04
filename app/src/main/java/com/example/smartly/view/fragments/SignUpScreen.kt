@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.smartly.R
 import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.FragmentSignUpScreenBinding
-import com.example.smartly.view.activities.MainActivity
 
 
 class SignUpScreen : Fragment() {
