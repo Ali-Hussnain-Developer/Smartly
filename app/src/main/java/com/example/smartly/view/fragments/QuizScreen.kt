@@ -105,10 +105,13 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
                 "No internet connection. Please check your network settings.",
                 Toast.LENGTH_LONG
             ).show()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, QuizSetupScreen())
-                .addToBackStack(null)
-                .commit()
+
+
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, QuizSetupScreen())
+            // Do not add to back stack to destroy the previous fragment
+            transaction.commit()
+
         } else {
             loadQuestions()
         }
@@ -128,7 +131,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     }
 
     private fun loadQuestions() {
-        val amount = 10
+        val amount = 2
         if (arguments != null) {
             categoryId = requireArguments().getInt("categoryId")
             selectedDifficulty = requireArguments().getString("selectedDifficulty")
@@ -307,10 +310,11 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
             val resultFragment: Fragment = ResultScreen().apply {
                 arguments = bundle
             }
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, resultFragment)
-                .addToBackStack(null)
-                .commit()
+
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, resultFragment)
+            // Do not add to back stack to destroy the previous fragment
+            transaction.commit()
         }
     }
 
@@ -321,9 +325,10 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     }
 
     override fun onCategorySelected() {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, QuizSetupScreen())
-            .addToBackStack(null)
-            .commit()
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragment_container, QuizSetupScreen())
+        // Do not add to back stack to destroy the previous fragment
+        transaction.commit()
+
     }
 }

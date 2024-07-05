@@ -22,18 +22,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding=ActivityMainBinding.inflate(layoutInflater)
         initialization(savedInstanceState)
+
         setContentView(binding.root)
     }
 
     private fun initialization(savedInstanceState: Bundle?) {
         sharedPreferencesHelper = SharedPreferencesHelper(this)
-        if (savedInstanceState == null) {
-            loadFragment(SignUpScreen())
-        }
+
         if (intent != null && intent.hasExtra("fragment_to_open")) {
             val fragmentToOpen = intent.getStringExtra("fragment_to_open")
             if (fragmentToOpen == "ResultFragment") {
+
                 openFragment(ResultScreen())
+            }
+        }
+        else{
+            if (savedInstanceState == null) {
+                loadFragment(SignUpScreen())
             }
         }
     }

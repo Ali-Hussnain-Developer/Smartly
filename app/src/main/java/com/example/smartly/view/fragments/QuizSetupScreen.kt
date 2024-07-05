@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.example.smartly.R
 import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.FragmentQuizSetupScreenBinding
@@ -92,10 +91,15 @@ class QuizSetupScreen : Fragment() {
                 bundle.putString("selectedQuestionType", "$selectedQuestionType")
                 val quizFragment: Fragment = QuizScreen()
                 quizFragment.arguments = bundle
-                val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
+
+                val transaction = parentFragmentManager.beginTransaction()
                 transaction.replace(R.id.fragment_container, quizFragment)
-                transaction.addToBackStack(null)
+                // Do not add to back stack to destroy the previous fragment
                 transaction.commit()
+
+
+
+
                 val message = "Category: $selectedCategory\nDifficulty: $selectedDifficulty\nQuestion Type: $selectedQuestionType"
                 sharedPreferencesHelper.setUserCategory(selectedCategory.toString())
 
@@ -126,7 +130,7 @@ class QuizSetupScreen : Fragment() {
 
     }
 
-    private fun setupSpinner(spinner: Spinner, items: List<String>, onItemSelected: (String) -> Unit) {
+    /*private fun setupSpinner(spinner: Spinner, items: List<String>, onItemSelected: (String) -> Unit) {
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, items)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
@@ -142,8 +146,25 @@ class QuizSetupScreen : Fragment() {
                 // Do nothing
             }
         }
-    }
+    }*/
 
+    private fun setupSpinner(spinner: Spinner, items: List<String>, onItemSelected: (String) -> Unit) {
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, items)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                categoryId = position
+                val selectedItem = parent.getItemAtPosition(position) as String
+                onItemSelected(selectedItem)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
+        }
+    }
 
 
     override fun onDestroyView() {

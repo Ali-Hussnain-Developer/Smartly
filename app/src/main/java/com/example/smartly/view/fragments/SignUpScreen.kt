@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import com.example.smartly.R
 import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.FragmentSignUpScreenBinding
@@ -33,10 +34,10 @@ class SignUpScreen : Fragment() {
     private fun initialization() {
         sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
         if (sharedPreferencesHelper.isLoggedIn()) {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, QuizSetupScreen())
-                .addToBackStack(null)
-                .commit()
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, QuizSetupScreen())
+            transaction.commit()
+
         }
 
     }
@@ -52,10 +53,9 @@ class SignUpScreen : Fragment() {
                 sharedPreferencesHelper.setLoggedIn(true)
                 sharedPreferencesHelper.setUserName(username)
                 Toast.makeText(requireContext(), "Hello, $username!", Toast.LENGTH_SHORT).show()
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, QuizSetupScreen())
-                    .addToBackStack(null)
-                    .commit()
+                val transaction = parentFragmentManager.beginTransaction()
+                transaction.replace(R.id.fragment_container, QuizSetupScreen())
+                transaction.commit()
             }
         }
     }
