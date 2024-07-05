@@ -55,7 +55,7 @@ class QuizFeedBackDialog {
                 dialogView.postDelayed({
                     alertDialog.dismiss()
                 }, fadeOut.duration)
-            }, 500)
+            }, 300)
         }
     }
 }

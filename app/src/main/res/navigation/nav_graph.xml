@@ -6,6 +6,6 @@
 
     <fragment
         android:id="@+id/signUpScreen"
-        android:name="com.example.smartly.view.fragments.SignUpScreen"
+        android:name="com.example.smartly.presentation.view.fragments.SignUpScreen"
         android:label="SignUpScreen" />
 </navigation>

@@ -5,8 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 
-class CreateNotificationClass {
-    companion object{
+object CreateNotificationClass {
         fun createNotificationChannel(context: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val name = "My Channel"
@@ -20,5 +19,4 @@ class CreateNotificationClass {
                 notificationManager.createNotificationChannel(channel)
             }
         }
-    }
 }

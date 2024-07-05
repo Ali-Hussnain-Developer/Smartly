@@ -10,6 +10,7 @@ class SharedPreferencesHelper(context: Context) {
     private val keyUserName = "user_name"
     private val keyUserCategory = "user_category"
     private val keyUserTotalScore = "user_total_score"
+    private val keyUserImagePath = "user_image_path"
     private val sharedPreferences: SharedPreferences
 
     init {
@@ -51,5 +52,13 @@ class SharedPreferencesHelper(context: Context) {
     }
     fun getUserTotalScore(): String? {
         return sharedPreferences.getString(keyUserTotalScore,"")
+    }
+    fun setUserProfilePic(imagePath:String) {
+        val editor = sharedPreferences.edit()
+        editor.putString(keyUserImagePath, imagePath)
+        editor.apply()
+    }
+    fun getUserProfilePic(): String? {
+        return sharedPreferences.getString(keyUserImagePath,"")
     }
 }

@@ -1,6 +1,6 @@
 package com.example.smartly.di
 
-import com.example.smartly.apiInterface.TriviaApi
+import com.example.smartly.data.apiInterface.TriviaApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

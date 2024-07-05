@@ -9,7 +9,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.smartly.R
-import com.example.smartly.view.activities.MainActivity
+import com.example.smartly.presentation.view.activities.MainActivity
 
 class ShowNotificationClass {
     companion object{
