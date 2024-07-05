@@ -2,17 +2,17 @@ package com.example.smartly.presentation.view.fragments
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.smartly.NotesApplication
 import com.example.smartly.R
 import com.example.smartly.Util.SharedPreferencesHelper
-import com.example.smartly.presentation.adapter.ResultAdapter
-import com.example.smartly.NotesApplication
 import com.example.smartly.databinding.FragmentResultScreenBinding
+import com.example.smartly.presentation.adapter.ResultAdapter
 import com.example.smartly.presentation.viewModel.NotesViewModel
 import com.example.smartly.presentation.viewModel.NotesViewModelFactory
 
@@ -23,6 +23,7 @@ class ResultScreen : Fragment() {
     lateinit var notesViewModel: NotesViewModel
     private lateinit var resultAdapter: ResultAdapter
     lateinit var sharedPreferencesHelper: SharedPreferencesHelper
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

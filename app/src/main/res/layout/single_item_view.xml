@@ -30,36 +30,3 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
-
-
-
-
-
-    <!--
-    <?xml version="1.0" encoding="utf-8"?>
-    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="5dp"
-        android:background="@color/white"
-        android:layout_margin="10dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/tv_description"
-            android:textColor="@color/black"
-            android:singleLine="false"
-            android:layout_marginVertical="5dp"
-            android:layout_marginHorizontal="10dp"
-            android:textSize="15sp"/>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>-->

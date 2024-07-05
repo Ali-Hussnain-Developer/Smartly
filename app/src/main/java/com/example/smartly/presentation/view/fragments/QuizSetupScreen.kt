@@ -96,11 +96,6 @@ class QuizSetupScreen : Fragment() {
                 transaction.replace(R.id.fragment_container, quizFragment)
                 // Do not add to back stack to destroy the previous fragment
                 transaction.commit()
-
-
-
-
-                val message = "Category: $selectedCategory\nDifficulty: $selectedDifficulty\nQuestion Type: $selectedQuestionType"
                 sharedPreferencesHelper.setUserCategory(selectedCategory.toString())
 
             } else {
@@ -129,24 +124,6 @@ class QuizSetupScreen : Fragment() {
         }
 
     }
-
-    /*private fun setupSpinner(spinner: Spinner, items: List<String>, onItemSelected: (String) -> Unit) {
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, items)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                categoryId = position
-                val selectedItem = parent.getItemAtPosition(position) as String
-                onItemSelected(selectedItem)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // Do nothing
-            }
-        }
-    }*/
 
     private fun setupSpinner(spinner: Spinner, items: List<String>, onItemSelected: (String) -> Unit) {
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, items)

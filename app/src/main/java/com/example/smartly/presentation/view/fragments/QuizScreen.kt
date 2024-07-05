@@ -6,36 +6,32 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ProgressBar
-import androidx.fragment.app.Fragment
-import com.example.smartly.R
-import java.util.Locale
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.example.smartly.NotesApplication
+import com.example.smartly.R
 import com.example.smartly.Util.ApiState
-import com.example.smartly.Util.CreateNotificationClass
 import com.example.smartly.Util.InternetConnectivity.Companion.isInternetAvailable
 import com.example.smartly.Util.QuizFeedBackDialog
 import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.Util.ShowEmptyListDialog
 import com.example.smartly.Util.ShowNotificationClass
 import com.example.smartly.Util.ShowScoreDialog
-import com.example.smartly.NotesApplication
 import com.example.smartly.data.dao.NotesDatabase
+import com.example.smartly.databinding.FragmentQuizScreenBinding
 import com.example.smartly.domain.model.Question
 import com.example.smartly.domain.model.UserAnswer
-import com.example.smartly.databinding.FragmentQuizScreenBinding
 import com.example.smartly.presentation.viewModel.MainViewModel
 import com.example.smartly.presentation.viewModel.NotesViewModel
 import com.example.smartly.presentation.viewModel.NotesViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
-
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 
 @AndroidEntryPoint
@@ -49,8 +45,6 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     private var currentQuestionIndex = 0
     private var questions: List<Question> = listOf()
     private val mainViewModel: MainViewModel by viewModels()
-    lateinit var progressBar: ProgressBar
-    lateinit var submitButton: Button
     private var isQuizStarted = false
     var userTotalScore: Int? = 0
     lateinit var notesViewModel: NotesViewModel
@@ -76,41 +70,39 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
         val viewModelFactory = NotesViewModelFactory(application.repository)
         notesViewModel = ViewModelProvider(this, viewModelFactory).get(NotesViewModel::class.java)
         sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
-        progressBar = view.findViewById(R.id.progress_bar)
-        submitButton = view.findViewById(R.id.submitAnswerButton)
+        checkInternetConnectivity()
+    }
+
+    private fun checkInternetConnectivity() {
         if (!isInternetAvailable(requireContext())) {
             Toast.makeText(
                 requireContext(),
                 "No internet connection. Please check your network settings.",
                 Toast.LENGTH_LONG
             ).show()
-
-
             val transaction = parentFragmentManager.beginTransaction()
             transaction.replace(R.id.fragment_container, QuizSetupScreen())
-            // Do not add to back stack to destroy the previous fragment
             transaction.commit()
 
         } else {
             loadQuestions()
         }
-        CreateNotificationClass.createNotificationChannel(requireContext())
     }
 
     private fun clickListener() {
         binding.optionsRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-            submitButton.isEnabled =
+            binding.submitAnswerButton.isEnabled =
                 checkedId != -1 // Enable button if any radio button is selected
         }
         binding.submitAnswerButton.setOnClickListener {
             checkAnswer()
         }
-        submitButton.isEnabled = false
+        binding.submitAnswerButton.isEnabled = false
 
     }
 
     private fun loadQuestions() {
-        val amount = 2
+        val amount = 10
         if (arguments != null) {
             categoryId = requireArguments().getInt("categoryId")
             selectedDifficulty = requireArguments().getString("selectedDifficulty")
@@ -193,7 +185,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
                 binding.questionNumberTextView.text = "Question # ${currentQuestionIndex + 1}"
                 binding.optionsRadioGroup.visibility = View.VISIBLE
                 binding.submitAnswerButton.visibility = View.VISIBLE
-                binding.layoutAnswersCount.visibility=View.VISIBLE
+                binding.layoutAnswersCount.visibility = View.VISIBLE
                 val options = question.incorrect_answers.toMutableList().apply {
                     add(question.correct_answer)
                     shuffle()
@@ -255,8 +247,8 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
         lifecycleScope.launch {
             val incorrectCount = db.notesDao().getIncorrectAnswersCount()
             val correctCount = db.notesDao().getCorrectAnswersCount()
-            binding.correctAnswerTextView.text =correctCount.toString()
-            binding.InCorrectAnswerTextView.text =incorrectCount.toString()
+            binding.correctAnswerTextView.text = correctCount.toString()
+            binding.InCorrectAnswerTextView.text = incorrectCount.toString()
         }
 
 
@@ -312,7 +304,6 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     override fun onCategorySelected() {
         val transaction = parentFragmentManager.beginTransaction()
         transaction.replace(R.id.fragment_container, QuizSetupScreen())
-        // Do not add to back stack to destroy the previous fragment
         transaction.commit()
 
     }

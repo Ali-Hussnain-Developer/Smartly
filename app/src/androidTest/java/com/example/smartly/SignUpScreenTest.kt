@@ -50,3 +50,4 @@ class SignUpScreenTest {
         onView(withId(R.id.quiz_setup_screen_layout)).check(matches(isDisplayed()))
     }
 }
+

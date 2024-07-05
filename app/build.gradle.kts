@@ -51,10 +51,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.rules)
     implementation(libs.androidx.junit.ktx)
-    //implementation(libs.play.services.cast.framework)
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+
     //Navigation
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
@@ -63,9 +61,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
 
-
+    //activity Ktx
     implementation(libs.androidx.activity.ktx)
-
 
     //retrofit
     implementation(libs.gson)
@@ -76,30 +73,28 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
+    //Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+
+    //Room
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
-    androidTestImplementation("androidx.fragment:fragment-testing:1.8.1")
+    //Testing Libraries
+    androidTestImplementation(libs.androidx.fragment.testing)
+    androidTestImplementation(libs.androidx.core)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.espresso.intents)
+    androidTestImplementation(libs.androidx.espresso.contrib)
+    androidTestImplementation(libs.mockito.android)
+    androidTestImplementation(libs.androidx.core.testing)
 
-
-    androidTestImplementation("androidx.test:core:1.4.0")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    androidTestImplementation("androidx.test.espresso:espresso-intents:3.4.0")
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
-    androidTestImplementation("org.mockito:mockito-android:3.11.2")
-    androidTestImplementation("androidx.arch.core:core-testing:2.1.0")
-
+    //circular Image View
     implementation(libs.circleimageview)
 
-    androidTestImplementation("org.hamcrest:hamcrest-library:1.3")
-    androidTestImplementation("org.hamcrest:hamcrest-core:1.3")
-    androidTestImplementation("org.hamcrest:hamcrest-integration:1.3")
 
 
 }

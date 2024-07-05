@@ -11,11 +11,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.smartly.Util.SharedPreferencesHelper
-import com.example.smartly.presentation.adapter.NotesAdapter
 import com.example.smartly.NotesApplication
+import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.FragmentProfileScreenBinding
 import com.example.smartly.domain.model.NotesModelClass
+import com.example.smartly.presentation.adapter.NotesAdapter
 import com.example.smartly.presentation.viewModel.NotesViewModel
 import com.example.smartly.presentation.viewModel.NotesViewModelFactory
 

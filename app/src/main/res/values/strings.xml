@@ -11,4 +11,26 @@
     <string name="txt_quiz_type">Choose Quiz Type</string>
     <string name="txt_data_not_available">Questions are not available for this category. Please select another category.</string>
     <string name="txt_select_another_category">Select Another Category</string>
+    <string name="txt_next">Next</string>
+    <string name="txt_username">Username</string>
+    <string name="txt_correct_answer_count">Correct Answer Count :</string>
+    <string name="txt_incorrect_answer_count">In Correct Answer Count :</string>
+    <string name="txt_category">Category: </string>
+    <string name="txt_total_score">Total Score: </string>
+    <string name="txt_start_quiz">Start Quiz</string>
+    <string name="txt_post">Post</string>
+    <string name="txt_question">Questions:         </string>
+    <string name="txt_correct_question">Correct Answer</string>
+    <string name="txt_incorrect_question">InCorrect Answer</string>
+    <string name="txt_selected_answer">Selected Answer</string>
+    <string name="txt_score_criteria">Score Criteria</string>
+    <string name="txt_easy_mode">* Quiz Mode Easy</string>
+    <string name="txt_medium_mode">* Quiz Mode Medium</string>
+    <string name="txt_hard_mode">* Quiz Mode Hard</string>
+    <string name="txt_marks_one">    = Marks 1</string>
+    <string name="txt_marks_two">= Marks 2</string>
+    <string name="txt_marks_three">   = Marks 3</string>
+    <string name="txt_your_quiz_mode">Your Quiz Mode: </string>
+    <string name="txt_correct_answer">Corrected Answer: </string>
+
 </resources>

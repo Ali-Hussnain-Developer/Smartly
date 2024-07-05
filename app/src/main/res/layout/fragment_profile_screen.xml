@@ -25,7 +25,6 @@
         android:textSize="25sp"
         android:gravity="center"
         android:textStyle="bold"
-        android:text="Ali"
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="15dp"
         app:layout_constraintBottom_toTopOf="@+id/editTextThought"
@@ -54,7 +53,7 @@
         android:id="@+id/buttonPost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Post"
+        android:text="@string/txt_post"
         android:layout_marginTop="20dp"
         android:layout_marginHorizontal="20dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,67 +73,3 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-    <!--
-    <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context=".presentation.view.fragments.ProfileScreen"
-        android:background="@color/white"
-        android:id="@+id/profile_screen_layout">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:id="@+id/user_profile_pic"
-            android:layout_gravity="center"
-            android:layout_marginVertical="10dp"
-            android:src="@drawable/person_avatar"/>
-
-
-
-            <TextView
-                android:id="@+id/txt_user_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="25sp"
-                android:gravity="center"
-                android:textStyle="bold" />
-
-
-        <EditText
-            android:id="@+id/editTextThought"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginVertical="10dp"
-            android:background="@drawable/curved_edit_text"
-            android:gravity="top"
-            android:hint="@string/txt_question_thoughts"
-            android:imeOptions="actionDone"
-            android:inputType="textMultiLine|textNoSuggestions"
-            android:maxLength="255"
-            android:padding="10dp" />
-
-
-        <Button
-            android:id="@+id/buttonPost"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="20dp"
-            android:text="Post" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_post"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp" />
-
-
-    </LinearLayout>-->

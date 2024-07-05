@@ -38,8 +38,5 @@
             </intent-filter>
         </activity>
     </application>
-    <instrumentation
-        android:name="androidx.test.runner.AndroidJUnitRunner"
-        android:targetPackage="com.example.smartly" />
 
 </manifest>

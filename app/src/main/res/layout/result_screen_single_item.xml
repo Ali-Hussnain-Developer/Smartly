@@ -18,7 +18,7 @@
             android:id="@+id/tv_question_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Questions:         "
+            android:text="@string/txt_question"
             android:textStyle="bold"
             android:textColor="@color/black"
             app:layout_constraintTop_toTopOf="parent"
@@ -41,7 +41,7 @@
             android:id="@+id/tv_correct_answer_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Correct Answer"
+            android:text="@string/txt_correct_question"
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/tv_question"
@@ -64,7 +64,7 @@
             android:id="@+id/tv_selected_answer_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Selected Answer"
+            android:text="@string/txt_selected_answer"
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/tv_correct_answer"
@@ -84,90 +84,3 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
-
-
-
-    <!--
-    <?xml version="1.0" encoding="utf-8"?>
-    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="10dp"
-        android:layout_marginVertical="10dp"
-        android:layout_marginHorizontal="20dp">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="10dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-          >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Questions:  "
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tv_question"
-                android:textStyle="bold"
-                android:textColor="@color/black"/>
-        </LinearLayout>
-
-           <LinearLayout
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:orientation="horizontal"
-           android:layout_marginVertical="20dp">
-           <TextView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:text="Correct Answer"
-               android:textColor="@color/black"
-               android:textStyle="bold"
-               />
-           <TextView
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:id="@+id/tv_correct_answer"
-               android:textColor="@color/black"
-               android:layout_marginHorizontal="10dp"
-              />
-
-
-       </LinearLayout>
-
-       <LinearLayout
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:orientation="horizontal">
-           <TextView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:text="Selected Answer"
-               android:textColor="@color/black"
-               android:textStyle="bold"/>
-           <TextView
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:id="@+id/tv_selected_answer"
-               android:textColor="@color/black"
-               android:layout_marginHorizontal="10dp"/>
-
-
-       </LinearLayout>
-
-
-
-    </LinearLayout>
-    </androidx.cardview.widget.CardView>-->

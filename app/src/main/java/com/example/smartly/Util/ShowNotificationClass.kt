@@ -46,6 +46,7 @@ class ShowNotificationClass {
                 notificationManager.createNotificationChannel(channel)
             }
 
+
             with(NotificationManagerCompat.from(context)) {
                 notify(1, builder.build())
             }

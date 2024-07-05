@@ -1,7 +1,10 @@
 [versions]
 agp = "8.5.0"
 circleimageview = "3.1.0"
+coreTesting = "2.2.0"
+fragmentTesting = "1.8.1"
 gson = "2.10.1"
+hamcrestIntegration = "2.2"
 hamcrestLibrary = "2.2"
 hiltAndroidCompiler = "2.48"
 kotlin = "1.9.0"
@@ -15,6 +18,7 @@ lifecycleViewmodelKtx = "2.8.3"
 material = "1.12.0"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
+mockitoAndroid = "3.11.2"
 mockitoCore = "4.8.0"
 navigationFragmentKtx = "2.7.7"
 retrofit = "2.9.0"
@@ -25,7 +29,12 @@ playServicesCastFramework = "21.5.0"
 
 [libraries]
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
+androidx-core = { module = "androidx.test:core", version.ref = "rules" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
+androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "espressoCore" }
+androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espressoCore" }
+androidx-fragment-testing = { module = "androidx.fragment:fragment-testing", version.ref = "fragmentTesting" }
 androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
@@ -37,6 +46,7 @@ circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circ
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hamcrest-core = { module = "org.hamcrest:hamcrest-core", version.ref = "hamcrestLibrary" }
+hamcrest-integration = { module = "org.hamcrest:hamcrest-integration", version.ref = "hamcrestIntegration" }
 hamcrest-library = { module = "org.hamcrest:hamcrest-library", version.ref = "hamcrestLibrary" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidCompiler" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
@@ -49,6 +59,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroid" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-rules = { group = "androidx.test", name = "rules", version.ref = "rules" }

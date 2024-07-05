@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
@@ -17,7 +18,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Score Criteria"
+            android:text="@string/txt_score_criteria"
             android:textSize="25sp"
             android:gravity="center"
             android:layout_marginVertical="15dp"
@@ -32,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
-                android:text="* Quiz Mode Easy"
+                android:text="@string/txt_easy_mode"
                 android:textStyle="bold"
                 android:textColor="@android:color/black" />
             <TextView
@@ -43,7 +44,8 @@
                 android:text="       Marks = 1"
                 android:layout_marginHorizontal="10dp"
                 android:textStyle="bold"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout
@@ -56,18 +58,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
-                android:text="* Quiz Mode Medium"
+                android:text="@string/txt_medium_mode"
                 android:textStyle="bold"
                 android:textColor="@android:color/black" />
             <TextView
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:text=" Marks = 2"
                 android:layout_marginHorizontal="10dp"
                 android:textStyle="bold"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -79,7 +81,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
-                android:text="* Quiz Mode Hard"
+                android:text="@string/txt_hard_mode"
                 android:textStyle="bold"
                 android:textColor="@android:color/black" />
             <TextView
@@ -89,7 +91,8 @@
                 android:text="       Marks = 3"
                 android:layout_marginHorizontal="10dp"
                 android:textStyle="bold"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout
@@ -111,7 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
-                    android:text="Your Quiz Mode: "
+                    android:text="@string/txt_your_quiz_mode"
                     android:textStyle="bold"
                     android:textColor="@android:color/black" />
                 <TextView
@@ -135,7 +138,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
-                    android:text="Corrected Answer: "
+                    android:text="@string/txt_correct_answer"
                     android:textStyle="bold"
                     android:textColor="@android:color/black" />
                 <TextView
@@ -159,8 +162,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
-                    android:text="Total Score: "
-
+                    android:text="@string/txt_total_score"
                     android:textStyle="bold"
                     android:textColor="@android:color/holo_green_dark" />
                 <TextView
@@ -168,7 +170,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
-                    android:text="3"
                     android:layout_marginHorizontal="5dp"
                     android:textStyle="bold"
                     android:textColor="@android:color/holo_green_dark" />
