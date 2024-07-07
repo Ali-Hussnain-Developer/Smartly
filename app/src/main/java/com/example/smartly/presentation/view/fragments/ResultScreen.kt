@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.smartly.NotesApplication
@@ -14,7 +15,6 @@ import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.FragmentResultScreenBinding
 import com.example.smartly.presentation.adapter.ResultAdapter
 import com.example.smartly.presentation.viewModel.NotesViewModel
-import com.example.smartly.presentation.viewModel.NotesViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -23,7 +23,7 @@ import javax.inject.Inject
 class ResultScreen : Fragment() {
     private var _binding: FragmentResultScreenBinding? = null
     private val binding get() = _binding!!
-    lateinit var notesViewModel: NotesViewModel
+    val notesViewModel: NotesViewModel by viewModels()
     private lateinit var resultAdapter: ResultAdapter
     @Inject
     lateinit var sharedPreferencesHelper: SharedPreferencesHelper
@@ -58,13 +58,9 @@ class ResultScreen : Fragment() {
         binding.userCategoryTextView.text=userSelectedCategory
         binding.totalScoreTextViewResultScreen.text=userTotalScore
         sharedPreferencesHelper.getUserTotalScore()
-        val application = requireActivity().application as NotesApplication
-        val viewModelFactory = NotesViewModelFactory(application.repository)
-        notesViewModel = ViewModelProvider(this, viewModelFactory).get(NotesViewModel::class.java)
         binding.recyclerViewResult.layoutManager = LinearLayoutManager(context)
         binding.recyclerViewResult.setHasFixedSize(true)
         notesViewModel.allAnswers.observe(viewLifecycleOwner) { result ->
-            Log.d("result","${result.size}")
             resultAdapter= ResultAdapter(result)
             binding.recyclerViewResult.adapter=resultAdapter
         }

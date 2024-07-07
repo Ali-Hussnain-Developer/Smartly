@@ -94,6 +94,9 @@ dependencies {
 
     //circular Image View
     implementation(libs.circleimageview)
+    //Glide
+    implementation(libs.github.glide)
+    annotationProcessor(libs.compiler)
 
 
 

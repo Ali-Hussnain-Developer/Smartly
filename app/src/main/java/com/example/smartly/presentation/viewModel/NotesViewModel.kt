@@ -1,36 +1,43 @@
 package com.example.smartly.presentation.viewModel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.smartly.domain.Repository.NotesRepository
 import com.example.smartly.domain.model.NotesModelClass
 import com.example.smartly.domain.model.UserAnswer
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class NotesViewModel (private val notesRepository: NotesRepository) : ViewModel() {
+@HiltViewModel
+class NotesViewModel @Inject constructor(private val notesRepository: NotesRepository) : ViewModel() {
+
     val allNotes: LiveData<List<NotesModelClass>> = notesRepository.allNotes.asLiveData()
     val allAnswers: LiveData<List<UserAnswer>> = notesRepository.allAnswers.asLiveData()
 
-    // Create
-    fun insertNotes(notes: NotesModelClass) = viewModelScope.launch(Dispatchers.IO){
-            notesRepository.insert(notes)
+    fun insertNotes(notes: NotesModelClass) = viewModelScope.launch(Dispatchers.IO) {
+        notesRepository.insert(notes)
     }
-    fun insertAnswer(userAnswer: UserAnswer) = viewModelScope.launch(Dispatchers.IO){
+
+    fun insertAnswer(userAnswer: UserAnswer) = viewModelScope.launch(Dispatchers.IO) {
         notesRepository.insertAnswer(userAnswer)
     }
-}
-class NotesViewModelFactory(private val repository: NotesRepository): ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(NotesViewModel::class.java)){
-            return NotesViewModel(repository) as T
+    fun deleteAllUserAnswers() = viewModelScope.launch(Dispatchers.IO) {
+        notesRepository.deleteAllUserAnswers()
+    }
+
+
+    suspend fun getCorrectAnswersCount(): Int {
+        return withContext(Dispatchers.IO) {
+            notesRepository.getCorrectAnswersCount()
         }
-        else{
-            throw IllegalArgumentException("unknown View Model")
+    }
+
+    suspend fun getIncorrectAnswersCount(): Int {
+        return withContext(Dispatchers.IO) {
+            notesRepository.getIncorrectAnswersCount()
         }
     }
 }
+

@@ -11,9 +11,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.example.smartly.NotesApplication
 import com.example.smartly.R
 import com.example.smartly.Util.ApiState
 import com.example.smartly.Util.InternetConnectivity.Companion.isInternetAvailable
@@ -22,13 +20,11 @@ import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.Util.ShowEmptyListDialog
 import com.example.smartly.Util.ShowNotificationClass
 import com.example.smartly.Util.ShowScoreDialog
-import com.example.smartly.data.dao.NotesDatabase
 import com.example.smartly.databinding.FragmentQuizScreenBinding
 import com.example.smartly.domain.model.Question
 import com.example.smartly.domain.model.UserAnswer
 import com.example.smartly.presentation.viewModel.MainViewModel
 import com.example.smartly.presentation.viewModel.NotesViewModel
-import com.example.smartly.presentation.viewModel.NotesViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -42,13 +38,12 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     var categoryId: Int? = 0
     var selectedDifficulty: String? = null
     var selectedQuestionType: String? = null
-    private val db by lazy { NotesDatabase.getDatabase(requireContext()) }
     private var currentQuestionIndex = 0
     private var questions: List<Question> = listOf()
     private val mainViewModel: MainViewModel by viewModels()
     private var isQuizStarted = false
     var userTotalScore: Int? = 0
-    lateinit var notesViewModel: NotesViewModel
+    val notesViewModel: NotesViewModel by viewModels()
     @Inject
     lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     override fun onCreateView(
@@ -61,15 +56,13 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initialization(view)
-        clickListener()
+        initialization()
+
     }
 
-    private fun initialization(view: View) {
-        val application = requireActivity().application as NotesApplication
-        val viewModelFactory = NotesViewModelFactory(application.repository)
-        notesViewModel = ViewModelProvider(this, viewModelFactory).get(NotesViewModel::class.java)
+    private fun initialization() {
         checkInternetConnectivity()
+        clickListener()
     }
 
     private fun checkInternetConnectivity() {
@@ -101,7 +94,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     }
 
     private fun loadQuestions() {
-        val amount = 10
+        val amount = 2
         if (arguments != null) {
             categoryId = requireArguments().getInt("categoryId")
             selectedDifficulty = requireArguments().getString("selectedDifficulty")
@@ -136,7 +129,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
 
         if (!isQuizStarted) {
             lifecycleScope.launch {
-                db.notesDao().deleteAllUserAnswers()
+                notesViewModel.deleteAllUserAnswers()
             }
             isQuizStarted = true // Mark the quiz as started
         }
@@ -244,8 +237,9 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
         binding.optionsRadioGroup.clearCheck()
         QuizFeedBackDialog.showFeedbackDialog(isCorrect, requireContext())
         lifecycleScope.launch {
-            val incorrectCount = db.notesDao().getIncorrectAnswersCount()
-            val correctCount = db.notesDao().getCorrectAnswersCount()
+
+            val incorrectCount = notesViewModel.getIncorrectAnswersCount()
+            val correctCount = notesViewModel.getCorrectAnswersCount()
             binding.correctAnswerTextView.text = correctCount.toString()
             binding.InCorrectAnswerTextView.text = incorrectCount.toString()
         }
@@ -266,8 +260,9 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     private fun showResults() {
 
         lifecycleScope.launch {
-            val incorrectCount = db.notesDao().getIncorrectAnswersCount()
-            val correctCount = db.notesDao().getCorrectAnswersCount()
+            val incorrectCount=  notesViewModel.getIncorrectAnswersCount()
+            val correctCount = notesViewModel.getCorrectAnswersCount()
+
             userTotalScore = ShowScoreDialog.showScoreDialog(
                 selectedDifficulty.toString(),
                 correctCount,

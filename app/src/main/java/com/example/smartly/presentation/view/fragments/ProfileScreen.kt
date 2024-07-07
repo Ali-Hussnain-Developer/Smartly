@@ -3,37 +3,40 @@ package com.example.smartly.presentation.view.fragments
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.smartly.NotesApplication
+import com.bumptech.glide.Glide
+import com.example.smartly.R
 import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.FragmentProfileScreenBinding
 import com.example.smartly.domain.model.NotesModelClass
 import com.example.smartly.presentation.adapter.NotesAdapter
 import com.example.smartly.presentation.viewModel.NotesViewModel
-import com.example.smartly.presentation.viewModel.NotesViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class ProfileScreen : Fragment() {
     private var _binding: FragmentProfileScreenBinding? = null
     private val binding get() = _binding!!
-    lateinit var notesViewModel: NotesViewModel
+    val notesViewModel: NotesViewModel by viewModels()
     private lateinit var notesAdapter: NotesAdapter
+
     @Inject
     lateinit var sharedPreferencesHelper: SharedPreferencesHelper
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentProfileScreenBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -43,17 +46,13 @@ class ProfileScreen : Fragment() {
         initialization()
         clickListener()
     }
-    private fun clickListener() {
 
+    private fun clickListener() {
         binding.buttonPost.setOnClickListener {
             postThought()
         }
         binding.editTextThought.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
-                true
-            } else {
-                false
-            }
+            actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT
         }
     }
 
@@ -65,7 +64,6 @@ class ProfileScreen : Fragment() {
             binding.editTextThought.setText("")
             saveData(thought)
             Toast.makeText(activity, "Thought posted!", Toast.LENGTH_SHORT).show()
-
         }
     }
 
@@ -73,22 +71,29 @@ class ProfileScreen : Fragment() {
         notesViewModel.insertNotes(NotesModelClass(thought))
     }
 
-
     private fun initialization() {
-        val application = requireActivity().application as NotesApplication
-        val viewModelFactory = NotesViewModelFactory(application.repository)
-        notesViewModel = ViewModelProvider(this, viewModelFactory).get(NotesViewModel::class.java)
         notesAdapter = NotesAdapter(requireContext())
-       // sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
-        val userName=sharedPreferencesHelper.getUserName()
-        val imagePath = sharedPreferencesHelper.getUserProfilePic()
+        val userName = sharedPreferencesHelper.getUserName()
+
         if (userName != null) {
-            if (!imagePath.isNullOrEmpty() && userName.isNotEmpty()) {
-                // Load image into ImageView
-                binding.userProfilePic.setImageURI(Uri.parse(imagePath))
-            }
+            binding.txtUserName.text = userName
         }
-        binding.txtUserName.text=userName
+
+        val imagePath = sharedPreferencesHelper.getUserProfilePic()
+        if (!imagePath.isNullOrEmpty()) {
+            val file = File(imagePath)
+            if (file.exists()) {
+                Glide.with(this)
+                    .load(Uri.fromFile(file))
+                    .placeholder(R.drawable.person_avatar)
+                    .error(R.drawable.person_avatar)
+                    .into(binding.userProfilePic)
+            } else {
+                binding.userProfilePic.setImageResource(R.drawable.person_avatar)
+            }
+        } else {
+            binding.userProfilePic.setImageResource(R.drawable.person_avatar)
+        }
 
         binding.recyclerViewPost.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -97,14 +102,10 @@ class ProfileScreen : Fragment() {
         notesViewModel.allNotes.observe(viewLifecycleOwner) { notes ->
             notesAdapter.setNotes(notes)
         }
-
-
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-
 }

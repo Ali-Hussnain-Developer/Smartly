@@ -72,6 +72,8 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.btn_logout -> {
                 sharedPreferencesHelper.setLoggedIn(false)
+                sharedPreferencesHelper.setUserProfilePic("")
+                sharedPreferencesHelper.setUserName("")
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, SignUpScreen())
                     .commit()
