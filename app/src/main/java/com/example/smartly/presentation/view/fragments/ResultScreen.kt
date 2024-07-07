@@ -15,14 +15,19 @@ import com.example.smartly.databinding.FragmentResultScreenBinding
 import com.example.smartly.presentation.adapter.ResultAdapter
 import com.example.smartly.presentation.viewModel.NotesViewModel
 import com.example.smartly.presentation.viewModel.NotesViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class ResultScreen : Fragment() {
     private var _binding: FragmentResultScreenBinding? = null
     private val binding get() = _binding!!
     lateinit var notesViewModel: NotesViewModel
     private lateinit var resultAdapter: ResultAdapter
+    @Inject
     lateinit var sharedPreferencesHelper: SharedPreferencesHelper
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,7 +53,6 @@ class ResultScreen : Fragment() {
     }
 
     private fun initialization() {
-        sharedPreferencesHelper=SharedPreferencesHelper(requireContext())
         val userSelectedCategory=sharedPreferencesHelper.getUserCategory()
         val userTotalScore=sharedPreferencesHelper.getUserTotalScore()
         binding.userCategoryTextView.text=userSelectedCategory

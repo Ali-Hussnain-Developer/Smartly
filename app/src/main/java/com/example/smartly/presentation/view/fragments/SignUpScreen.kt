@@ -20,12 +20,15 @@ import androidx.fragment.app.Fragment
 import com.example.smartly.R
 import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.FragmentSignUpScreenBinding
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class SignUpScreen : Fragment() {
+    @Inject
+    lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     private var _binding: FragmentSignUpScreenBinding? = null
     private val binding get() = _binding!!
-    private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     private lateinit var selectedImagePath: String
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -56,7 +59,6 @@ class SignUpScreen : Fragment() {
     }
 
     private fun initialization() {
-        sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
         if (sharedPreferencesHelper.isLoggedIn()) {
             val transaction = parentFragmentManager.beginTransaction()
             transaction.replace(R.id.fragment_container, QuizSetupScreen())

@@ -18,8 +18,11 @@ import androidx.fragment.app.Fragment
 import com.example.smartly.R
 import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.FragmentQuizSetupScreenBinding
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class QuizSetupScreen : Fragment() {
     private var _binding: FragmentQuizSetupScreenBinding? = null
     private val binding get() = _binding!!
@@ -27,7 +30,8 @@ class QuizSetupScreen : Fragment() {
     private var selectedDifficulty: String? = null
     private var selectedQuestionType: String? = null
     private var categoryId: Int? = 0
-    private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
+    @Inject
+    lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
@@ -75,7 +79,6 @@ class QuizSetupScreen : Fragment() {
     }
 
     private fun initialization() {
-        sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
         askUserNotificationPermission(requireContext())
         setupSpinner(binding.spinnerCategories, categories) { selectedCategory = it }
         setupSpinner(binding.spinnerDifficulty, difficulties) { selectedDifficulty = it }

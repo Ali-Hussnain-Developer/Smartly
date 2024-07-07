@@ -18,14 +18,18 @@ import com.example.smartly.domain.model.NotesModelClass
 import com.example.smartly.presentation.adapter.NotesAdapter
 import com.example.smartly.presentation.viewModel.NotesViewModel
 import com.example.smartly.presentation.viewModel.NotesViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class ProfileScreen : Fragment() {
     private var _binding: FragmentProfileScreenBinding? = null
     private val binding get() = _binding!!
     lateinit var notesViewModel: NotesViewModel
     private lateinit var notesAdapter: NotesAdapter
-    private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
+    @Inject
+    lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -75,8 +79,8 @@ class ProfileScreen : Fragment() {
         val viewModelFactory = NotesViewModelFactory(application.repository)
         notesViewModel = ViewModelProvider(this, viewModelFactory).get(NotesViewModel::class.java)
         notesAdapter = NotesAdapter(requireContext())
-        sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
-        val userName=sharedPreferencesHelper.gerUsername()
+       // sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
+        val userName=sharedPreferencesHelper.getUserName()
         val imagePath = sharedPreferencesHelper.getUserProfilePic()
         if (userName != null) {
             if (!imagePath.isNullOrEmpty() && userName.isNotEmpty()) {

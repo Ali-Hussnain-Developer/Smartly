@@ -32,6 +32,7 @@ import com.example.smartly.presentation.viewModel.NotesViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Locale
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -48,9 +49,8 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     private var isQuizStarted = false
     var userTotalScore: Int? = 0
     lateinit var notesViewModel: NotesViewModel
-
-
-    private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
+    @Inject
+    lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -69,7 +69,6 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
         val application = requireActivity().application as NotesApplication
         val viewModelFactory = NotesViewModelFactory(application.repository)
         notesViewModel = ViewModelProvider(this, viewModelFactory).get(NotesViewModel::class.java)
-        sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
         checkInternetConnectivity()
     }
 

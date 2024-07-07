@@ -13,11 +13,13 @@ import com.example.smartly.presentation.view.fragments.ProfileScreen
 import com.example.smartly.presentation.view.fragments.ResultScreen
 import com.example.smartly.presentation.view.fragments.SignUpScreen
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     lateinit var binding: ActivityMainBinding
-    private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +29,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initialization(savedInstanceState: Bundle?) {
-        sharedPreferencesHelper = SharedPreferencesHelper(this)
         if (sharedPreferencesHelper.isLoggedIn()) {
             if (intent != null && intent.hasExtra("fragment_to_open")) {
                 val fragmentToOpen = intent.getStringExtra("fragment_to_open")
