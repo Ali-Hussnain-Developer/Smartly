@@ -9,9 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.example.smartly.R
 
-class QuizFeedBackDialog {
-
-    companion object{
+object QuizFeedBackDialog {
 
          fun showFeedbackDialog(isCorrect: Boolean,context: Context) {
             val dialogView =
@@ -58,4 +56,3 @@ class QuizFeedBackDialog {
             }, 300)
         }
     }
-}

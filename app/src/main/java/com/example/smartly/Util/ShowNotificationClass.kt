@@ -11,8 +11,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.smartly.R
 import com.example.smartly.presentation.view.activities.MainActivity
 
-class ShowNotificationClass {
-    companion object{
+object ShowNotificationClass {
 
         fun showNotification(context: Context, message: String) {
             val intent = Intent(context, MainActivity::class.java).apply {
@@ -52,4 +51,3 @@ class ShowNotificationClass {
             }
         }
     }
-}

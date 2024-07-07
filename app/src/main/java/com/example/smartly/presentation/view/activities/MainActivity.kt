@@ -4,9 +4,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.example.smartly.R
+import com.example.smartly.Util.FragmentTransactionClass
 import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.ActivityMainBinding
 import com.example.smartly.presentation.view.fragments.ProfileScreen
@@ -24,45 +23,34 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityMainBinding.inflate(layoutInflater)
-        initialization(savedInstanceState)
+        initialization()
         setContentView(binding.root)
     }
 
-    private fun initialization(savedInstanceState: Bundle?) {
+    private fun initialization() {
         if (sharedPreferencesHelper.isLoggedIn()) {
-            if (intent != null && intent.hasExtra("fragment_to_open")) {
-                val fragmentToOpen = intent.getStringExtra("fragment_to_open")
-                if (fragmentToOpen == "ResultFragment") {
-
-                    openFragment(ResultScreen())
-                }
-            }
-            else{
-                if (savedInstanceState == null) {
-                    loadFragment(SignUpScreen())
-                }
-            }
-
+            handleDeepLink()
         }
         else{
-            loadFragment(SignUpScreen())
+            FragmentTransactionClass.fragmentTransaction(supportFragmentManager,SignUpScreen())
         }
 
 
     }
 
-    private fun openFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
+    private fun handleDeepLink() {
+        if (intent != null && intent.hasExtra("fragment_to_open")) {
+            val fragmentToOpen = intent.getStringExtra("fragment_to_open")
+            if (fragmentToOpen == "ResultFragment") {
+                FragmentTransactionClass.fragmentTransaction(supportFragmentManager,ResultScreen())
+            }
+        }
+        else{
+                FragmentTransactionClass.fragmentTransaction(supportFragmentManager,SignUpScreen())
+
+        }
     }
 
-    private fun loadFragment(fragment: Fragment) {
-        val fragmentManager: FragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragment_container, fragment)
-        fragmentTransaction.commit()
-    }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         return true
@@ -74,19 +62,13 @@ class MainActivity : AppCompatActivity() {
                 sharedPreferencesHelper.setLoggedIn(false)
                 sharedPreferencesHelper.setUserProfilePic("")
                 sharedPreferencesHelper.setUserName("")
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, SignUpScreen())
-                    .commit()
+                FragmentTransactionClass.fragmentTransaction(supportFragmentManager,SignUpScreen())
             }
             R.id.btn_profile -> {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, ProfileScreen())
-                    .commit()
+                FragmentTransactionClass.fragmentTransaction(supportFragmentManager,ProfileScreen())
             }
             R.id.btn_result -> {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, ResultScreen())
-                    .commit()
+                FragmentTransactionClass.fragmentTransaction(supportFragmentManager,ResultScreen())
             }
         }
         return true

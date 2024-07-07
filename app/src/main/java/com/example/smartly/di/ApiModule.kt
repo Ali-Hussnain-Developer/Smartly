@@ -12,14 +12,14 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object ApiModule {
 
     @Provides
     fun providesUrl() = "https://opentdb.com/"
 
     @Provides
     @Singleton
-    fun providesApiService(url:String) : TriviaApi =
+    fun providesApiService(url: String): TriviaApi =
         Retrofit.Builder()
             .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create())

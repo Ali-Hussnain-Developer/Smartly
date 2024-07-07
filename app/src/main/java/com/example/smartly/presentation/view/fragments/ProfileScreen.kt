@@ -1,34 +1,36 @@
 package com.example.smartly.presentation.view.fragments
 
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.smartly.BR
 import com.example.smartly.R
 import com.example.smartly.Util.SharedPreferencesHelper
+import com.example.smartly.Util.ToastHandler
 import com.example.smartly.databinding.FragmentProfileScreenBinding
+import com.example.smartly.databinding.SingleItemViewBinding
 import com.example.smartly.domain.model.NotesModelClass
-import com.example.smartly.presentation.adapter.NotesAdapter
-import com.example.smartly.presentation.viewModel.NotesViewModel
+import com.example.smartly.presentation.adapter.GenericRecyclerViewAdapter
+import com.example.smartly.presentation.viewModel.ViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProfileScreen : Fragment() {
-    private var _binding: FragmentProfileScreenBinding? = null
-    private val binding get() = _binding!!
-    val notesViewModel: NotesViewModel by viewModels()
-    private lateinit var notesAdapter: NotesAdapter
+    val viewModel: ViewModels by viewModels()
+    private lateinit var binding: FragmentProfileScreenBinding
+    private lateinit var adapter: GenericRecyclerViewAdapter<NotesModelClass, SingleItemViewBinding>
 
     @Inject
     lateinit var sharedPreferencesHelper: SharedPreferencesHelper
@@ -37,14 +39,14 @@ class ProfileScreen : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentProfileScreenBinding.inflate(inflater, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile_screen, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initialization()
-        clickListener()
+
     }
 
     private fun clickListener() {
@@ -59,26 +61,50 @@ class ProfileScreen : Fragment() {
     private fun postThought() {
         val thought = binding.editTextThought.text.toString().trim()
         if (thought.isEmpty()) {
-            Toast.makeText(activity, "Please enter your thought", Toast.LENGTH_SHORT).show()
+            ToastHandler.showToast(requireContext(),"Please enter your thought")
         } else {
             binding.editTextThought.setText("")
             saveData(thought)
-            Toast.makeText(activity, "Thought posted!", Toast.LENGTH_SHORT).show()
+            ToastHandler.showToast(requireContext(),"Thought posted!")
         }
     }
 
     private fun saveData(thought: String) {
-        notesViewModel.insertNotes(NotesModelClass(thought))
+        viewModel.insertNotes(NotesModelClass(thought))
     }
 
     private fun initialization() {
-        notesAdapter = NotesAdapter(requireContext())
-        val userName = sharedPreferencesHelper.getUserName()
+        clickListener()
+        setUserName()
+        setProfilePicture()
+        setRecyclerView()
+    }
 
-        if (userName != null) {
-            binding.txtUserName.text = userName
+    private fun setRecyclerView() {
+        viewModel.allNotes.observe(viewLifecycleOwner) { notes ->
+            adapter.setItems(notes)
+        }
+        binding.recyclerViewPost.layoutManager = LinearLayoutManager(context)
+        binding.recyclerViewPost.setHasFixedSize(true)
+        adapter = GenericRecyclerViewAdapter(
+            requireContext(),
+            emptyList(),
+            R.layout.single_item_view,
+            BR.note
+        ) { note ->
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, note.thoughts)
+                type = "text/plain"
+            }
+            startActivity(Intent.createChooser(shareIntent, "Share your thought via"))
         }
 
+        binding.recyclerViewPost.adapter = adapter
+    }
+
+
+    private fun setProfilePicture() {
         val imagePath = sharedPreferencesHelper.getUserProfilePic()
         if (!imagePath.isNullOrEmpty()) {
             val file = File(imagePath)
@@ -95,17 +121,14 @@ class ProfileScreen : Fragment() {
             binding.userProfilePic.setImageResource(R.drawable.person_avatar)
         }
 
-        binding.recyclerViewPost.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = notesAdapter
-        }
-        notesViewModel.allNotes.observe(viewLifecycleOwner) { notes ->
-            notesAdapter.setNotes(notes)
-        }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun setUserName() {
+        val userName = sharedPreferencesHelper.getUserName()
+        if (userName != null) {
+            binding.txtUserName.text = userName
+        }
+
     }
+
 }

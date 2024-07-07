@@ -7,9 +7,7 @@ import android.view.LayoutInflater
 import android.widget.TextView
 import com.example.smartly.R
 
-class ShowScoreDialog {
-    companion object{
-
+object ShowScoreDialog {
         @SuppressLint("MissingInflatedId")
         fun showScoreDialog(userQuizMode: String, userCorrectAnswer: Int,context: Context,sharedPreferencesHelper: SharedPreferencesHelper): Int?
         {var userTotalScore:Int?=0
@@ -45,4 +43,3 @@ class ShowScoreDialog {
 
         }
     }
-}

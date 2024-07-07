@@ -11,12 +11,12 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.example.smartly.R
+import com.example.smartly.Util.FragmentTransactionClass
 import com.example.smartly.Util.SharedPreferencesHelper
+import com.example.smartly.Util.ToastHandler
 import com.example.smartly.databinding.FragmentQuizSetupScreenBinding
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -35,9 +35,9 @@ class QuizSetupScreen : Fragment() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                Toast.makeText(requireContext(), "Permission Granted", Toast.LENGTH_SHORT).show()
+                ToastHandler.showToast(requireContext(),"Permission Granted")
             } else {
-                Toast.makeText(requireContext(), "Permission not Granted", Toast.LENGTH_SHORT).show()
+                ToastHandler.showToast(requireContext(),"Permission not Granted")
             }
         }
     private val categories = listOf(
@@ -75,11 +75,12 @@ class QuizSetupScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initialization()
-        clickListener()
+
     }
 
     private fun initialization() {
         askUserNotificationPermission(requireContext())
+        clickListener()
         setupSpinner(binding.spinnerCategories, categories) { selectedCategory = it }
         setupSpinner(binding.spinnerDifficulty, difficulties) { selectedDifficulty = it }
         setupSpinner(binding.spinnerQuestionType, questionTypes) { selectedQuestionType = it }
@@ -94,19 +95,17 @@ class QuizSetupScreen : Fragment() {
                 bundle.putString("selectedQuestionType", "$selectedQuestionType")
                 val quizFragment: Fragment = QuizScreen()
                 quizFragment.arguments = bundle
-
-                val transaction = parentFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, quizFragment)
-                // Do not add to back stack to destroy the previous fragment
-                transaction.commit()
+                FragmentTransactionClass.fragmentTransaction(parentFragmentManager,quizFragment)
                 sharedPreferencesHelper.setUserCategory(selectedCategory.toString())
 
             } else {
-                Toast.makeText(requireContext(), "Please select all options", Toast.LENGTH_SHORT).show()
+                ToastHandler.showToast(requireContext(),"Please select all options")
             }
         }
 
     }
+
+
 
     private fun askUserNotificationPermission(requireContext: Context) {
         // This is only necessary for API level >= 33 (TIRAMISU)
@@ -121,7 +120,6 @@ class QuizSetupScreen : Fragment() {
             } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
                 // TODO: display an educational UI explaining to the user the features that will be enabled
             } else {
-                // Directly ask for the permission
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
@@ -141,7 +139,6 @@ class QuizSetupScreen : Fragment() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
-                // Do nothing
             }
         }
     }

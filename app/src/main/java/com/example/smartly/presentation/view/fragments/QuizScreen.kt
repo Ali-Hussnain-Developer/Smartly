@@ -7,24 +7,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.smartly.R
 import com.example.smartly.Util.ApiState
-import com.example.smartly.Util.InternetConnectivity.Companion.isInternetAvailable
+import com.example.smartly.Util.FragmentTransactionClass
+import com.example.smartly.Util.InternetConnectivity.isInternetAvailable
 import com.example.smartly.Util.QuizFeedBackDialog
 import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.Util.ShowEmptyListDialog
 import com.example.smartly.Util.ShowNotificationClass
 import com.example.smartly.Util.ShowScoreDialog
+import com.example.smartly.Util.ToastHandler
 import com.example.smartly.databinding.FragmentQuizScreenBinding
 import com.example.smartly.domain.model.Question
 import com.example.smartly.domain.model.UserAnswer
-import com.example.smartly.presentation.viewModel.MainViewModel
-import com.example.smartly.presentation.viewModel.NotesViewModel
+import com.example.smartly.presentation.viewModel.ViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -35,17 +34,16 @@ import javax.inject.Inject
 class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     private var _binding: FragmentQuizScreenBinding? = null
     private val binding get() = _binding!!
+    @Inject
+    lateinit var sharedPreferencesHelper: SharedPreferencesHelper
+    private val viewModel: ViewModels by viewModels()
+    private var questions: List<Question> = listOf()
     var categoryId: Int? = 0
     var selectedDifficulty: String? = null
     var selectedQuestionType: String? = null
     private var currentQuestionIndex = 0
-    private var questions: List<Question> = listOf()
-    private val mainViewModel: MainViewModel by viewModels()
     private var isQuizStarted = false
     var userTotalScore: Int? = 0
-    val notesViewModel: NotesViewModel by viewModels()
-    @Inject
-    lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -67,14 +65,8 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
 
     private fun checkInternetConnectivity() {
         if (!isInternetAvailable(requireContext())) {
-            Toast.makeText(
-                requireContext(),
-                "No internet connection. Please check your network settings.",
-                Toast.LENGTH_LONG
-            ).show()
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container, QuizSetupScreen())
-            transaction.commit()
+            ToastHandler.showToast(requireContext(),"No internet connection. Please check your network settings")
+            FragmentTransactionClass.fragmentTransaction(parentFragmentManager,QuizSetupScreen())
 
         } else {
             loadQuestions()
@@ -94,7 +86,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     }
 
     private fun loadQuestions() {
-        val amount = 2
+        val amount = 10
         if (arguments != null) {
             categoryId = requireArguments().getInt("categoryId")
             selectedDifficulty = requireArguments().getString("selectedDifficulty")
@@ -104,7 +96,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
         if (selectedQuestionType!!.contains("True/False")) {
             val categoryIdNew = (categoryId)!! + 8
             type = "boolean"
-            mainViewModel.getTriviaQuestions(
+            viewModel.getTriviaQuestions(
                 amount,
                 categoryIdNew, selectedDifficulty!!.toLowerCase(Locale.ROOT), type
             )
@@ -115,7 +107,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
                 selectedDifficulty.let { difficulty ->
                     it?.let { it1 ->
                         difficulty?.let { it2 ->
-                            mainViewModel.getTriviaQuestions(
+                            viewModel.getTriviaQuestions(
                                 amount,
                                 it1,
                                 it2.toLowerCase(Locale.ROOT),
@@ -129,7 +121,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
 
         if (!isQuizStarted) {
             lifecycleScope.launch {
-                notesViewModel.deleteAllUserAnswers()
+                viewModel.deleteAllUserAnswers()
             }
             isQuizStarted = true // Mark the quiz as started
         }
@@ -137,7 +129,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
 
 
         lifecycleScope.launchWhenStarted {
-            mainViewModel._triviaStateFlow.collect { state ->
+            viewModel._triviaStateFlow.collect { state ->
                 when (state) {
                     is ApiState.Loading -> {
                         binding.progressBar.visibility = View.VISIBLE
@@ -232,14 +224,14 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
         )
 
         lifecycleScope.launch {
-            notesViewModel.insertAnswer(userAnswer)
+            viewModel.insertAnswer(userAnswer)
         }
         binding.optionsRadioGroup.clearCheck()
         QuizFeedBackDialog.showFeedbackDialog(isCorrect, requireContext())
         lifecycleScope.launch {
 
-            val incorrectCount = notesViewModel.getIncorrectAnswersCount()
-            val correctCount = notesViewModel.getCorrectAnswersCount()
+            val incorrectCount = viewModel.getIncorrectAnswersCount()
+            val correctCount = viewModel.getCorrectAnswersCount()
             binding.correctAnswerTextView.text = correctCount.toString()
             binding.InCorrectAnswerTextView.text = incorrectCount.toString()
         }
@@ -260,8 +252,8 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     private fun showResults() {
 
         lifecycleScope.launch {
-            val incorrectCount=  notesViewModel.getIncorrectAnswersCount()
-            val correctCount = notesViewModel.getCorrectAnswersCount()
+            val incorrectCount=  viewModel.getIncorrectAnswersCount()
+            val correctCount = viewModel.getCorrectAnswersCount()
 
             userTotalScore = ShowScoreDialog.showScoreDialog(
                 selectedDifficulty.toString(),
@@ -271,7 +263,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
             )
             val message =
                 "Correct: $correctCount, Incorrect: $incorrectCount Quiz Mode $selectedDifficulty Total Score $userTotalScore "
-            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+            ToastHandler.showToast(requireContext(),message)
             ShowNotificationClass.showNotification(requireContext(), message)
             val bundle = Bundle().apply {
                 putInt("correctCount", correctCount)
@@ -281,11 +273,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
             val resultFragment: Fragment = ResultScreen().apply {
                 arguments = bundle
             }
-
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container, resultFragment)
-            // Do not add to back stack to destroy the previous fragment
-            transaction.commit()
+            FragmentTransactionClass.fragmentTransaction(parentFragmentManager,resultFragment)
         }
     }
 
@@ -296,9 +284,7 @@ class QuizScreen : Fragment(), ShowEmptyListDialog.OnCategorySelectedListener {
     }
 
     override fun onCategorySelected() {
-        val transaction = parentFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, QuizSetupScreen())
-        transaction.commit()
+        FragmentTransactionClass.fragmentTransaction(parentFragmentManager,QuizSetupScreen())
 
     }
 }

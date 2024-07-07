@@ -14,6 +14,7 @@
         android:textStyle="bold"
         android:textSize="25sp"
         android:gravity="center"
+        android:textColor="@color/black"
         android:padding="5dp"
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
@@ -38,6 +39,7 @@
         android:id="@+id/spinner_categories"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:textColor="@color/black"
         />
 </LinearLayout>
 
@@ -59,7 +61,7 @@
         android:id="@+id/spinner_difficulty"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-
+        android:textColor="@color/black"
         />
 </LinearLayout>
 
@@ -83,6 +85,7 @@
         android:layout_width="match_parent"
         android:id="@+id/spinner_question_type"
         android:layout_height="50dp"
+        android:textColor="@color/black"
        />
     </LinearLayout>
 
@@ -96,7 +99,9 @@
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/layoutSpinnerQuestion"
+        app:layout_constraintTop_toBottomOf="@+id/layoutSpinnerQuestion"
+        android:background="@drawable/rounded_corner_button"
+        android:textColor="@color/white"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

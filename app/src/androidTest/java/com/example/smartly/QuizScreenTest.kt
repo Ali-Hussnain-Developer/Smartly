@@ -54,7 +54,6 @@ class QuizScreenFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.submitAnswerButton))
             .perform(ViewActions.click())
 
-        // Verify that the "No internet connection" toast is displayed
 
     }
 }

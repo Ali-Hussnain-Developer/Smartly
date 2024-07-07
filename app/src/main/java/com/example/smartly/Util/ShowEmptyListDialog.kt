@@ -8,13 +8,12 @@ import android.widget.TextView
 import com.example.smartly.R
 
 
-class ShowEmptyListDialog {
+object ShowEmptyListDialog {
 
     interface OnCategorySelectedListener {
         fun onCategorySelected()
     }
 
-companion object {
     @SuppressLint("MissingInflatedId")
     fun showEmptyListDialog(context: Context, listener: OnCategorySelectedListener) {
         val dialogView =
@@ -37,9 +36,3 @@ companion object {
 
 }
 
-
-
-
-
-
-}

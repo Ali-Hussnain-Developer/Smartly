@@ -11,13 +11,12 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.example.smartly.R
+import com.example.smartly.Util.FragmentTransactionClass
 import com.example.smartly.Util.SharedPreferencesHelper
 import com.example.smartly.databinding.FragmentSignUpScreenBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,9 +59,7 @@ class SignUpScreen : Fragment() {
 
     private fun initialization() {
         if (sharedPreferencesHelper.isLoggedIn()) {
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container, QuizSetupScreen())
-            transaction.commit()
+           FragmentTransactionClass.fragmentTransaction(parentFragmentManager,QuizSetupScreen())
         }
 
     }
@@ -82,10 +79,7 @@ class SignUpScreen : Fragment() {
                 binding.usernameTextInputLayout.error = null
                 sharedPreferencesHelper.setLoggedIn(true)
                 sharedPreferencesHelper.setUserName(username)
-                Toast.makeText(requireContext(), "Hello, $username!", Toast.LENGTH_SHORT).show()
-                val transaction = parentFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, QuizSetupScreen())
-                transaction.commit()
+                FragmentTransactionClass.fragmentTransaction(parentFragmentManager,QuizSetupScreen())
             }
         }
     }
